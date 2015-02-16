@@ -130,12 +130,15 @@ class User(AbstractPeopleField, CommonModel, AbstractBaseUser, PermissionsMixin)
         is_new = self.pk is None
 
         # WTF Django security
-        user = User.objects.get(id=self.id)
 
         if self.password and not self.password.startswith('pbkdf2_sha256$'):
             self.set_password(self.password)
-        elif self.id and not self.password and user.password:
-            self.password = user.password
+        elif self.id and not self.password:
+            user = User.objects.get(id=self.id)
+
+            if user.password:
+                self.password = user.password
+
         elif is_new:
             self.set_password(str(uuid1())[0: 10].replace('-', ''))
 
