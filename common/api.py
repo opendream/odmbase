@@ -223,6 +223,7 @@ class ImageAttachResource(ModelResource):
         return super(ImageAttachResource, self).put_detail(request, **kwargs)
 
 '''
+# Please, rewrite to single line
 curl  -F "attach_to=api/v1/common/96/"
       -F "image=@static/images/default.png"
       -F "title=This is an image file"
