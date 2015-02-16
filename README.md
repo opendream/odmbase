@@ -17,7 +17,19 @@
 ### Management
 - python manage.py migrate
 
+### For project implement by odmbase
+- cp odmbase/README.md .
+- cp odmbase/requirements.txt .
+- cp odmbase/conf.default conf
+- cp odmbase/managment.py .
 
-### Link
-- ln -s odmbase/README.md .
-- ln -s odmbase/requirements.txt .
+find all word "project_implement" and implement
+
+### Account fields implementation
+account.models
+class AbstractAccountField(models.Model):
+
+    .... your fields implement here ....
+
+    class Meta:
+        abstract = True
