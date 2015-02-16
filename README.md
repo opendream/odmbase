@@ -40,7 +40,7 @@ account.models
 
 	class AbstractAccountField(models.Model):
 
-	.... your fields implement here ....
+		.... your fields implement here ....
 
-	class Meta:
-		abstract = True
+		class Meta:
+			abstract = True
