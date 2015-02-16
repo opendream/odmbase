@@ -5,8 +5,8 @@ from django.views.generic import TemplateView
 from django.http import HttpResponse
 
 urlpatterns = patterns('',
-
-    url(r'^api/', include('api.urls')),
+    url(r'', include('conf.urls')),
+    url(r'^api/', include('odmbase.api.urls')),
     url(r'^admin/', include(admin.site.urls)),
     url(r'^account/', include('odmbase.account.urls')),
 )

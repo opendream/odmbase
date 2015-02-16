@@ -156,7 +156,16 @@ REGISTER_CONFIRM = False
 
 # Overide settings
 try:
-    from project_implement.settings_local import *
+    from conf.settings import *
+
+    INSTALLED_APPS += APPEND_INSTALLED_APPS
+
+except ImportError:
+    print 'Please, implement project see README.md'
+
+
+try:
+    from conf.settings_local import *
 except ImportError:
     pass
 
