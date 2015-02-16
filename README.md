@@ -16,3 +16,8 @@
 
 ### Management
 - python manage.py migrate
+
+
+### Link
+- ln -s odmbase/README.md .
+- ln -s odmbase/requirements.txt .

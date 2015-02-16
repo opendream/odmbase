@@ -1,0 +1,146 @@
+{% extends 'base_single.html' %}
+{% load i18n %}
+{% load staticfiles %}
+
+{% block title %}{% trans "Profile Settings" %}{% endblock %}
+
+{% block js %}
+{{ form.media.js }}
+<script type="text/javascript" src="{% static 'libs/prettycheckable/js/prettycheckable.js' %}"></script>
+{% endblock %}
+{% block css %}
+{{ form.media.css }}
+<link href="{% static 'libs/prettycheckable/css/prettycheckable.css' %}" type="text/css" rel="stylesheet">
+{% endblock %}
+
+{% block content_class %} content-smart{% endblock %}
+
+
+{% block breadcrumb %}
+<li class="active">{% trans "Profile Settings" %}</li>
+{% endblock %}
+
+
+{% block content %}
+{% if reset_password %}
+<div class="alert alert-warning">
+    <button type="button" class="close" data-dismiss="alert">&times;</button>
+    <strong>{% trans "Warning" %}!</strong> {% trans "Please, change your password" %}
+</div>
+{% endif %}
+
+<form method="post" class="form-horizontal" role="form" enctype="multipart/form-data" ng-non-bindable>
+    {% csrf_token %}
+    <input type="text" name="prevent_autofill" id="prevent_autofill" value="" style="display:none;" />
+    <input type="password" name="password_fake" id="password_fake" value="" style="display:none;" />
+
+    {% if form.non_field_errors %}
+    <div class="errors alert alert-danger">{{ form.non_field_errors }}</div>
+    {% endif %}
+
+    <div class="controls form-group">
+        <label for="id_username" class="col-sm-3 control-label">{% trans "Username" %} *</label>
+        <div class="col-sm-7">
+            <input id="id_username" name="username" type="text" class="form-control" value="{{ form.username.value|default_if_none:"" }}" required>
+            {% if form.username.errors %}
+            <div class="errors alert alert-danger">{{ form.username.errors }}</div>
+            {% endif %}
+        </div>
+    </div>
+
+    <div class="controls form-group">
+        <label for="id_email" class="col-sm-3 control-label">{% trans "Email" %} *</label>
+        <div class="col-sm-7">
+            <input id="id_email" name="email" type="email" class="form-control" value="{{ form.email.value|default_if_none:"" }}" required readonly>
+            {% if form.email.errors %}
+            <div class="errors alert alert-danger">{{ form.email.errors }}</div>
+            {% endif %}
+        </div>
+    </div>
+
+    <div class="controls form-group{% if reset_password %} has-warning has-feedback{% endif %}">
+        <label for="id_password" class="col-sm-3 control-label">{% trans "Password" %}</label>
+
+        {% if not reset_password and not form.password2.errors %}
+        <div class="col-sm-7">
+            <a class="display-link-control" href="#display-password-input">{% trans "click for change your password" %}</a>
+        </div>
+        {% endif %}
+
+        <div class="col-sm-7{% if not reset_password %} display-on-display-password-input-click{% endif %}"{% if not reset_password and  not form.password2.errors %} style="display: none;"{% endif %}>
+            <input id="id_password" name="password" type="password" class="form-control" value=""{% if reset_password %} required{% endif %}>
+            {% if reset_password %}
+            <span class="glyphicon glyphicon-warning-sign form-control-feedback"></span>
+            {% endif %}
+            {% if form.password.errors %}
+            <div class="errors alert alert-danger">{{ form.password.errors }}</div>
+            {% endif %}
+        </div>
+    </div>
+
+    <div class="controls form-group{% if reset_password %} has-warning has-feedback{% endif %}{% if not reset_password %} display-on-display-password-input-click{% endif %}"{% if not reset_password and not form.password2.errors %} style="display: none;"{% endif %}>
+        <label for="id_password2" class="col-sm-3 control-label">{% trans "Confirm password" %}</label>
+        <div class="col-sm-7">
+            <input id="id_password2" name="password2" type="password" class="form-control" value=""{% if reset_password %} required{% endif %}>
+            {% if reset_password %}
+            <span class="glyphicon glyphicon-warning-sign form-control-feedback"></span>
+            {% endif %}
+            {% if form.password2.errors %}
+            <div class="errors alert alert-danger">{{ form.password2.errors }}</div>
+            {% endif %}
+        </div>
+    </div>
+    <div class="controls form-group">
+        <br /><br />
+        <h3 class="col-sm-3 control-label">Information</h3>
+        <hr class="col-sm-7 hidden-xs" />
+        <br /><br class="hidden-xs"/>
+    </div>
+    <div class="controls form-group">
+        <label for="id_first_name" class="col-sm-3 control-label">{% trans "First name" %}</label>
+        <div class="col-sm-7">
+            <input id="id_first_name" name="first_name" type="text" class="form-control" value="{{ form.first_name.value|default_if_none:"" }}">
+            {% if form.first_name.errors %}
+            <div class="errors alert alert-danger">{{ form.first_name.errors }}</div>
+            {% endif %}
+        </div>
+    </div>
+
+    <div class="controls form-group">
+        <label for="id_last_name" class="col-sm-3 control-label">{% trans "Last name" %}</label>
+        <div class="col-sm-7">
+            <input id="id_last_name" name="last_name" type="text" class="form-control" value="{{ form.last_name.value|default_if_none:"" }}">
+            {% if form.last_name.errors %}
+            <div class="errors alert alert-danger">{{ form.last_name.errors }}</div>
+            {% endif %}
+        </div>
+    </div>
+
+    <div class="controls form-group">
+        <label for="id_description" class="col-sm-3 control-label">{% trans "Description" %}</label>
+        <div class="col-sm-7">
+            {{ form.description }}
+            {% if form.description.errors %}
+            <div class="errors alert alert-danger">{{ form.description.errors }}</div>
+            {% endif %}
+        </div>
+    </div>
+
+    <div class="controls form-group">
+        <div class="col-sm-offset-3 col-sm-7 form-action">
+            <button class="btn btn-primary btn-orange" type="submit">{% trans "Save changes" %}</button>
+            <a href="{% url 'home' %}" class="btn btn-default btn-cancel">{% trans "Cancel" %}</a>
+        </div>
+
+        {% if not form.is_new and user.is_staff %}
+        <a class="btn btn-md btn-delete" href="{% url 'presentation_delete' 'account' 'User' form.inst.id %}">
+            <span class="glyphicon glyphicon-remove"></span>
+            {% trans "Delete" %}
+        </a>
+        {% endif %}
+
+    </div>
+
+
+</form>
+{% endblock %}

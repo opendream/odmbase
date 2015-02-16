@@ -1,0 +1,21 @@
+{% extends 'base_single.html' %}
+{% load i18n %}
+{% load staticfiles %}
+
+{% block css %}
+{{ form.media.css }}
+{% endblock %}
+
+{% block title %}{% trans "Register" %}{% endblock %}
+
+{% block content_class %} content-thin{% endblock %}
+
+{% block breadcrumb %}
+<li class="active">{% trans "Register" %}</li>
+{% endblock %}
+
+{% block content %}
+
+{% include 'account/register_inline.html' %}
+
+{% endblock %}

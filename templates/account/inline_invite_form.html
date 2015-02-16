@@ -1,0 +1,86 @@
+{% load i18n %}
+{% load staticfiles %}
+{% load account_tags %}
+
+{% csrf_token %}
+{% if form.non_field_errors %}
+<div class="errors alert alert-danger">{{ form.non_field_errors }}</div>
+{%  endif %}
+
+<div class="controls">
+    <input name="email" type="email" class="form-control" placeholder="{% trans "Enter new email address" %}" value="{{ form.email.value|default_if_none:"" }}" required autofocus>
+    {% if form.email.errors %}
+    <div class="errors alert alert-danger">{{ form.email.errors }}</div>
+    {% endif %}
+
+</div>
+
+<div class="form-action">
+    <button class="btn btn-lg btn-primary btn-block btn-orange" type="submit">{% trans "Invite" %}</button>
+</div>
+
+{% if not no_inline %}
+<script type="text/javascript">
+
+    (function ($) {
+
+
+        {% if success %}
+
+
+        var win = {
+            'name': '{{ field_id }}',
+            'close': function () {
+                $('.add-another-inline-input-list').html('');
+
+            }
+        };
+
+        dismissAddAnotherPopup(win, '{{ user_id }}', '{{ user_id|user_render_reference:1|safe }}');
+
+        {% else %}
+
+
+        $('.add-another-inline-input-list .btn-cancel').click(function (e) {
+            e.preventDefault();
+            $('.add-another-inline-input-list').html('');
+            $('#inline_overlay').remove();
+        });
+
+        $('.add-another-inline-input-list .btn-primary').click(function (e) {
+            e.preventDefault();
+
+
+            var input_list_container = $(this).parents('.add-another-inline-input-list');
+            var input_list = input_list_container.find('[name]');
+
+            var params = {
+                '_inline': '1',
+                'field_id': '{{ field_id }}'
+            };
+            input_list.each(function () {
+                if ($(this).attr('type') == 'checkbox') {
+                    params[$(this).attr('name')] = 0+$(this).prop('checked');
+                }
+                else {
+                    params[$(this).attr('name')] = $(this).val();
+                }
+            });
+
+            var post_url = '{% url 'account_inline_invite' %}';
+            input_list_container.load(post_url, params);
+
+            $('#inline_overlay').remove();
+
+
+        });
+
+        $('.inline-reference-wrapper').append('<div id="inline_overlay"></div>');
+
+        {% endif %}
+
+
+    }) (jQuery);
+
+</script>
+{% endif %}

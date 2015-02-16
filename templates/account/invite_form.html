@@ -1,0 +1,29 @@
+{% extends 'base_single.html' %}
+{% load i18n %}
+{% load staticfiles %}
+
+{% block js %}
+<script type="text/javascript" src="{% static 'libs/prettycheckable/js/prettycheckable.js' %}"></script>
+{% endblock %}
+{% block css %}
+<link href="{% static 'libs/prettycheckable/css/prettycheckable.css' %}" type="text/css" rel="stylesheet">
+{{ form.media.css }}
+{% endblock %}
+
+{% block title %}{% trans "Invite Staff" %}{% endblock %}
+
+{% block content_class %} content-thin{% endblock %}
+
+{% block breadcrumb %}
+<li class="active">{% trans "Invite Staff" %}</li>
+{% endblock %}
+
+{% block content %}
+
+<form class="form-normal" role="form" method="post" ng-non-bindable>
+
+    {%  include 'account/inline_invite_form.html' with no_inline=True %}
+
+</form>
+
+{% endblock %}
