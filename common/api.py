@@ -15,6 +15,7 @@ from tastypie import http
 from tastypie import fields
 from django.core.serializers import json as djangojson
 from tastypie.utils import trailing_slash
+from odmbase.api.fields import SorlThumbnailField
 
 from odmbase.common.models import CommonModel, Image
 
@@ -234,6 +235,9 @@ class ImageResource(CommonResource):
 
     attach_to = fields.ForeignKey(CommonResource, 'attach_to', null=True, blank=True)
     image = fields.FileField(attribute='image')
+    image_thumbnail_1x = SorlThumbnailField(attribute='image', thumb_options={'geometry': '400x400'})
+    image_thumbnail_2x = SorlThumbnailField(attribute='image', thumb_options={'geometry': '800x800'})
+    image_thumbnail_3x = SorlThumbnailField(attribute='image', thumb_options={'geometry': '1024x1024'})
 
     unicode_string = fields.CharField(attribute='unicode_string', null=True, blank=True)
 

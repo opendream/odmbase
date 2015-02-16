@@ -40,6 +40,7 @@ INSTALLED_APPS = (
 
     # Lib
     'tastypie',
+    'sorl.thumbnail',
 
     # Project
     'odmbase.common',

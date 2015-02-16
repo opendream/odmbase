@@ -18,7 +18,7 @@ class Migration(migrations.Migration):
                 ('image', models.ImageField(upload_to=b'')),
                 ('title', models.CharField(max_length=255, null=True, blank=True)),
                 ('description', models.TextField(null=True, blank=True)),
-                ('attach_to', models.ForeignKey(blank=True, to='odmbase.common.CommonModel', null=True)),
+                ('attach_to', models.ForeignKey(blank=True, to='common.CommonModel', null=True)),
             ],
             options={
             },
