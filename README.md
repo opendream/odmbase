@@ -1,4 +1,13 @@
-# Install
+## Why?
+Keep time
+
+## Overview
+Django api base by opendream
+Account authenticate
+Social connect
+Common model for plug everything
+
+## Install
 
 ### Virtualenvs
 - mkvirtualenv projectname
