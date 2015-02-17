@@ -1,6 +1,10 @@
-
+import os
+import random
+import urllib
+from django.conf import settings
 from django.contrib.admin.forms import AdminAuthenticationForm
 from django.contrib.auth import REDIRECT_FIELD_NAME, login
+from django.core.files import File
 from django.utils.translation import ugettext_lazy as _
 
 
@@ -94,3 +98,32 @@ def uuid(url=None):
 def generate_key(number, prefix=''):
     prefix = prefix and ('%s-' % prefix)
     return '%s%s-%s' % (prefix, urlsafe_base64_encode(force_bytes(number)), uuid(number))
+
+
+def instance_save_image_from_url(instance, image_url, field_name='image', rand=False):
+    # Use save_form_data like model form
+    image_field = instance._meta.get_field(field_name)
+    if image_field:
+        # determined temp path of file widget
+        file_name = image_url.split('?')[0]
+        file_name_list = file_name.split('/')
+
+        # find the name of file
+        while len(file_name_list):
+            file_name = file_name_list.pop()
+            if file_name:
+                if not re.search('_(\d+)\.(jpg|jpef|png|gif)$', file_name, re.IGNORECASE):
+                    file_name = '%s.jpg' % file_name
+                break
+
+        if rand:
+            image_url = '%s?a=%s' % (image_url, random.randint(1, 100000000000))
+
+        result = urllib.urlretrieve(image_url)
+
+        image_file = getattr(instance, field_name)
+        image_file.save(file_name, File(open(result[0])))
+        instance.save()
+
+    else:
+        raise AttributeError

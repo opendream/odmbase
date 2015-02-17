@@ -17,18 +17,19 @@ from odmbase.account.functions import rewrite_username
 from odmbase.common.constants import STATUS_CHOICES, STATUS_PUBLISHED, STATUS_PENDING
 from odmbase.common.models import CommonModel
 
-
+'''
 field_extend = models.Model
 try:
     from account.models import AbstractAccountField
     field_extend = AbstractAccountField
 except ImportError:
     pass
+'''
 
 def get_upload_path(instance, filename):
     return 'user/%d/avatar.%s' % (instance.id, filename.split('.')[-1])
 
-class AbstractPeopleField(field_extend):
+class AbstractPeopleField(models.Model):
 
     priority = models.PositiveIntegerField(default=0)
     ordering = models.PositiveIntegerField(null=True, blank=True)
@@ -113,6 +114,9 @@ class User(AbstractPeopleField, CommonModel, AbstractBaseUser, PermissionsMixin)
     USERNAME_FIELD = 'username'
     REQUIRED_FIELDS = ['email']
 
+    class Meta:
+        abstract = True
+
 
     def __init__(self, *args, **kwargs):
 
@@ -121,6 +125,10 @@ class User(AbstractPeopleField, CommonModel, AbstractBaseUser, PermissionsMixin)
         password_field.blank = True
         password_field.null = True
 
+    # play safe for original django models check active
+    @property
+    def is_active(self):
+        return self.status == STATUS_PUBLISHED
 
     def save(self, *args, **kwargs):
         if not self.username:

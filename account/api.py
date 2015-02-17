@@ -4,12 +4,17 @@ from django.contrib.auth.tokens import default_token_generator
 from django.db import models
 from django.utils.http import urlsafe_base64_decode
 from tastypie import fields
+from tastypie.authentication import Authentication
 from tastypie.authorization import Authorization
+from tastypie.exceptions import BadRequest
 from tastypie.http import HttpUnauthorized, HttpForbidden
 from tastypie.models import ApiKey, create_api_key
-from tastypie.resources import ModelResource
+from tastypie.resources import ModelResource, BaseModelResource
 from tastypie.utils import trailing_slash
 from django.contrib.auth import get_user_model
+
+from social_auth.backends.facebook import BACKENDS
+
 from odmbase.common.api import ImageAttachResource, CommonResource, CommonAnonymousPostApiKeyAuthentication, \
     VerboseSerializer
 
@@ -207,3 +212,33 @@ class AutoAssignCreatedByMixinResource(ModelResource):
             pass
 
         return super(AutoAssignCreatedByMixinResource, self).obj_update(bundle, skip_errors=False, **kwargs)
+
+
+class SocialSignUpResource(CommonResource):
+
+    class Meta:
+        queryset = User.objects.all()
+        allowed_methods = ['post']
+        authentication = Authentication()
+        authorization = Authorization()
+        always_return_data = True
+        serializer = VerboseSerializer(formats=['json'])
+        excludes = ['password']
+        resource_name = "social_sign_up"
+        return_resource = UserResource
+
+    def obj_create(self, bundle, **kwargs):
+
+        provider = bundle.data['provider']
+        access_token = bundle.data['access_token']
+
+        Backend = BACKENDS[provider]
+        backend = Backend(request=bundle.request, redirect='/')
+
+
+        user = backend.do_auth(access_token)
+        if user and user.is_active:
+            bundle.obj = user
+            return bundle
+        else:
+            raise BadRequest("Error authenticating user with this provider")

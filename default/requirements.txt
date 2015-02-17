@@ -1,10 +1,15 @@
 Django==1.7.4
 Pillow==2.7.0
 bleach==1.4.1
+django-social-auth==0.7.28
 django-tastypie==0.12.1
 html5lib==0.999
+httplib2==0.9
+oauth2==1.5.211
 psycopg2==2.6
 python-dateutil==2.4.0
 python-mimeparse==0.1.4
+python-openid==2.2.5
 six==1.9.0
+sorl-thumbnail==12.2
 wsgiref==0.1.2

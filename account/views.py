@@ -7,6 +7,9 @@ from django.shortcuts import redirect
 from django.utils.http import urlsafe_base64_decode
 
 
+# deprecate when angular implement from api
+from odmbase import settings
+
 
 def account_register_confirm(request, uidb64=None, token=None, email_setting=False):
 
@@ -29,3 +32,23 @@ def account_register_confirm(request, uidb64=None, token=None, email_setting=Fal
     else:
         return HttpResponse('invalid link', status=404)
 
+
+# =========================================================
+# Social Auth
+# =========================================================
+
+def login_facebook(request):
+    if request.GET.get('next'):
+        request.session['facebook_next'] = request.GET.get('next')
+
+    print 'vvvvv'
+    from social_auth.views import auth
+    return auth(request, 'facebook')
+
+def login_facebook_redirect(request):
+    if request.session.get('facebook_next'):
+        url = request.session.get('facebook_next')
+    else:
+        url = settings.LOGIN_REDIRECT_URL
+
+    return redirect(url)

@@ -29,3 +29,6 @@ SITE_FAVICON_URL = '%simages/favicon-project_implement_override.png' % STATIC_UR
 
 GOOGLE_ANALYTICS_KEY = ''
 REGISTER_CONFIRM = False
+
+FACEBOOK_APP_ID = 'project_implement_override'
+FACEBOOK_API_SECRET = 'project_implement_override'

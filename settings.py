@@ -41,10 +41,12 @@ INSTALLED_APPS = (
     # Lib
     'tastypie',
     'sorl.thumbnail',
+    'social_auth',
 
     # Project
     'odmbase.common',
-    'odmbase.account',
+
+    #'odmbase.account',
 )
 
 MIDDLEWARE_CLASSES = (
@@ -126,7 +128,10 @@ MEDIA_URL = '/media/'
 # Account
 AUTH_USER_MODEL = 'account.User'
 AUTHENTICATION_BACKENDS = (
-    'odmbase.account.backends.EmailOrUsernameModelBackend',
+    'social_auth.backends.facebook.FacebookBackend',
+    # TODO: Implement later
+    #'social_auth.backends.twitter.TwitterBackend',
+    #'social_auth.backends.contrib.linkedin.LinkedinBackend',
     'django.contrib.auth.backends.ModelBackend'
 )
 
@@ -136,6 +141,47 @@ LOGIN_ERROR_URL = '/account/error/'
 
 # Email
 EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+
+
+# DJANGO SOCIAL AUTH
+
+SOCIAL_AUTH_RAISE_EXCEPTIONS = False
+SOCIAL_AUTH_SESSION_EXPIRATION = False
+SOCIAL_AUTH_UUID_LENGTH = 22
+
+FACEBOOK_APP_ID = 'project_implement'
+FACEBOOK_API_SECRET = 'project_implement'
+FACEBOOK_EXTENDED_PERMISSIONS = ['email']
+
+
+#LOGIN_URL = '/account/login/'
+#LOGIN_REDIRECT_URL = '/'
+#LOGIN_ERROR_URL = '/account/error/'
+
+SOCIAL_AUTH_USER_MODEL = 'account.User'
+SOCIAL_AUTH_DISCONNECT_REDIRECT_URL = '/account-disconnected-redirect-url/'
+SOCIAL_AUTH_BACKEND_ERROR_URL = '/account/error/'
+SOCIAL_AUTH_LOGIN_REDIRECT_URL = '/account/redirect/'
+SOCIAL_AUTH_NEW_USER_REDIRECT_URL = '/account/redirect/'
+SOCIAL_AUTH_NEW_ASSOCIATION_REDIRECT_URL = '/account/redirect/'
+SOCIAL_AUTH_COMPLETE_URL_NAME = 'socialauth_complete'
+SOCIAL_AUTH_ASSOCIATE_URL_NAME = 'socialauth_associate_complete'
+
+SOCIAL_AUTH_PIPELINE = (
+    'social_auth.backends.pipeline.social.social_auth_user',
+    'social_auth.backends.pipeline.associate.associate_by_email',
+    'odmbase.account.pipeline.generate_username',
+    'social_auth.backends.pipeline.user.create_user',
+    'social_auth.backends.pipeline.social.associate_user',
+    'social_auth.backends.pipeline.social.load_extra_data',
+    'odmbase.account.pipeline.update_user_details',
+    'odmbase.account.pipeline.update_profile',
+)
+
+RESERVED_USERNAMES = [
+    'admin',
+]
+
 
 # API
 TASTYPIE_DEFAULT_FORMATS = ['json']

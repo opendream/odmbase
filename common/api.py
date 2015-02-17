@@ -128,6 +128,15 @@ class CommonResource(ModelResource):
 
         return super(CommonResource, self).deserialize(request, data, format)
 
+    def get_resource_uri(self, bundle_or_obj=None, url_name='api_dispatch_list'):
+
+        resource_uri = super(CommonResource, self).get_resource_uri(bundle_or_obj, url_name)
+
+        if self._meta.return_resource:
+            resource_uri = resource_uri.replace(self._meta.resource_name, self._meta.return_resource._meta.resource_name)
+
+        return resource_uri
+
     def wrap_view(self, view):
         """
         Wraps methods so they can be called in a more functional way as well
@@ -235,6 +244,7 @@ class ImageResource(CommonResource):
 
     attach_to = fields.ForeignKey(CommonResource, 'attach_to', null=True, blank=True)
     image = fields.FileField(attribute='image')
+    image_thumbnail_product_front = SorlThumbnailField(attribute='image', thumb_options={'geometry': '280x280'})
     image_thumbnail_1x = SorlThumbnailField(attribute='image', thumb_options={'geometry': '400x400'})
     image_thumbnail_2x = SorlThumbnailField(attribute='image', thumb_options={'geometry': '800x800'})
     image_thumbnail_3x = SorlThumbnailField(attribute='image', thumb_options={'geometry': '1024x1024'})
