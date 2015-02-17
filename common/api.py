@@ -132,7 +132,7 @@ class CommonResource(ModelResource):
 
         resource_uri = super(CommonResource, self).get_resource_uri(bundle_or_obj, url_name)
 
-        if self._meta.return_resource:
+        if hasattr(self._meta, 'return_resource') and self._meta.return_resource:
             resource_uri = resource_uri.replace(self._meta.resource_name, self._meta.return_resource._meta.resource_name)
 
         return resource_uri
