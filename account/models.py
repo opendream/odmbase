@@ -105,7 +105,8 @@ class User(AbstractPeopleField, CommonModel, AbstractBaseUser, PermissionsMixin)
         help_text=_('Designates whether the user can log into this admin '
                     'site.'))
     status = models.IntegerField(choices=STATUS_CHOICES, default=STATUS_PUBLISHED)
-    created = models.DateTimeField(_('date joined'), default=timezone.now)
+    created = models.DateTimeField(_('created'), auto_now_add=True)
+    date_joined = models.DateTimeField(_('date joined'), default=timezone.now)
 
     # Deprecated
 

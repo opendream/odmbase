@@ -18,18 +18,6 @@ class Migration(migrations.Migration):
     operations = [
         migrations.AlterField(
             model_name='user',
-            name='address',
-            field=models.TextField(null=True, verbose_name='Address', blank=True),
-            preserve_default=True,
-        ),
-        migrations.AlterField(
-            model_name='user',
-            name='description',
-            field=models.TextField(null=True, verbose_name='About you', blank=True),
-            preserve_default=True,
-        ),
-        migrations.AlterField(
-            model_name='user',
             name='email',
             field=models.EmailField(unique=True, max_length=255, verbose_name='Email address'),
             preserve_default=True,
@@ -50,12 +38,6 @@ class Migration(migrations.Migration):
             model_name='user',
             name='last_name',
             field=models.CharField(max_length=255, null=True, verbose_name='Last name', blank=True),
-            preserve_default=True,
-        ),
-        migrations.AlterField(
-            model_name='user',
-            name='phone',
-            field=models.CharField(max_length=255, null=True, verbose_name='Phone', blank=True),
             preserve_default=True,
         ),
         migrations.AlterField(
