@@ -45,6 +45,7 @@ INSTALLED_APPS = (
 
     # Project
     'odmbase.common',
+    'account',
 
     #'odmbase.account',
 )
