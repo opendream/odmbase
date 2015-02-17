@@ -15,7 +15,7 @@
 	mkdir projectname
 	cd projectname
 	git clone git@bitbucket.org:opendream/odmbase.git
-	cp -R odmbase/default/* .
+	cp -R odmbase/default/. .
 
 ### Virtualenvs
 	mkvirtualenv projectname
