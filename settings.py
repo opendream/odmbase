@@ -133,6 +133,7 @@ AUTHENTICATION_BACKENDS = (
     # TODO: Implement later
     #'social_auth.backends.twitter.TwitterBackend',
     #'social_auth.backends.contrib.linkedin.LinkedinBackend',
+    'odmbase.account.backends.EmailOrUsernameModelBackend',
     'django.contrib.auth.backends.ModelBackend'
 )
 
