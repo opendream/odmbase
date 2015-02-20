@@ -116,6 +116,8 @@ def instance_save_image_from_url(instance, image_url, field_name='image', rand=F
                     file_name = '%s.jpg' % file_name
                 break
 
+        print file_name
+
         if rand:
             image_url = '%s?a=%s' % (image_url, random.randint(1, 100000000000))
 
@@ -123,7 +125,7 @@ def instance_save_image_from_url(instance, image_url, field_name='image', rand=F
 
         image_file = getattr(instance, field_name)
         image_file.save(file_name, File(open(result[0])))
-        instance.save()
+        #instance.save()
 
     else:
         raise AttributeError
