@@ -16,6 +16,7 @@ from django.utils.translation import ugettext_lazy as _
 from odmbase.account.functions import rewrite_username
 from odmbase.common.constants import STATUS_CHOICES, STATUS_PUBLISHED, STATUS_PENDING
 from odmbase.common.models import CommonModel
+from odmbase.common.storage import OverwriteStorage
 
 '''
 field_extend = models.Model
@@ -34,7 +35,7 @@ class AbstractPeopleField(models.Model):
     priority = models.PositiveIntegerField(default=0)
     ordering = models.PositiveIntegerField(null=True, blank=True)
 
-    image = models.ImageField(verbose_name=_('Avartar'), null=True, blank=True, upload_to=get_upload_path)
+    image = models.ImageField(verbose_name=_('Avartar'), null=True, blank=True, upload_to=get_upload_path, storage=OverwriteStorage())
     # Internal
     first_name = models.CharField(verbose_name=_('First name'), max_length=255, null=True, blank=True)
     last_name = models.CharField(verbose_name=_('Last name'), max_length=255, null=True, blank=True)
