@@ -39,6 +39,8 @@ class AbstractPeopleField(models.Model):
     first_name = models.CharField(verbose_name=_('First name'), max_length=255, null=True, blank=True)
     last_name = models.CharField(verbose_name=_('Last name'), max_length=255, null=True, blank=True)
 
+
+
     class Meta:
         abstract = True
 
@@ -143,7 +145,9 @@ class User(AbstractPeopleField, CommonModel, AbstractBaseUser, PermissionsMixin)
         if self.password and not self.password.startswith('pbkdf2_sha256$'):
             self.set_password(self.password)
         elif self.id and not self.password:
-            user = User.objects.get(id=self.id)
+
+            from account.models import User as AccountUser
+            user = AccountUser.objects.get(id=self.id)
 
             if user.password:
                 self.password = user.password
