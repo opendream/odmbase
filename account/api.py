@@ -239,6 +239,14 @@ class SocialSignUpResource(CommonResource):
         user = backend.do_auth(access_token)
         if user and user.is_active:
             bundle.obj = user
+
+            try:
+                key = ApiKey.objects.get(user=user)
+            except ApiKey.DoesNotExist:
+                raise HttpForbidden
+
+            bundle.data['key'] = key.key
+
             return bundle
         else:
             raise BadRequest("Error authenticating user with this provider")
