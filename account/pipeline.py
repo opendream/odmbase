@@ -39,6 +39,12 @@ def update_profile(backend, details, response, user=None, is_new=False, *args, *
         # TODO: update email
         pass
 
+    user.first_name = not user.first_name and details.get('first_name')
+    user.last_name = not user.last_name and details.get('last_name')
+
+    if hasattr(user, 'gender') and not user.gender and response.get('gender'):
+        user.gender = response.get('gender')
+
     if not user.image:
         fb_image_url = "https://graph.facebook.com/%s/picture?type=large" % response['id']
         instance_save_image_from_url(user, fb_image_url)
