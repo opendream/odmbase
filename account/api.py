@@ -214,7 +214,7 @@ class AutoAssignCreatedByMixinResource(ModelResource):
         return super(AutoAssignCreatedByMixinResource, self).obj_update(bundle, skip_errors=False, **kwargs)
 
 
-class SocialSignUpResource(CommonResource):
+class SocialSignResource(CommonResource):
 
     class Meta:
         queryset = User.objects.all()
@@ -224,7 +224,7 @@ class SocialSignUpResource(CommonResource):
         always_return_data = True
         serializer = VerboseSerializer(formats=['json'])
         excludes = ['password']
-        resource_name = "social_sign_up"
+        resource_name = 'social_sign'
         return_resource = UserResource
 
     def obj_create(self, bundle, **kwargs):

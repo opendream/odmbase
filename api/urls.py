@@ -9,9 +9,8 @@ v1_api.register(CommonResource())
 v1_api.register(ImageResource())
 
 # Account
-from odmbase.account.api import UserResource, SocialSignUpResource
+from odmbase.account.api import UserResource, SocialSignResource
 v1_api.register(UserResource())
-v1_api.register(SocialSignUpResource())
 
 try:
 
@@ -23,5 +22,6 @@ except ImportError:
     pass
 
 urlpatterns = patterns('',
+    (r'v1/user/', include(SocialSignResource().urls)),
     (r'', include(v1_api.urls)),
 )
