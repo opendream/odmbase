@@ -79,6 +79,7 @@ class AbstractCommonModel(models.Model):
     def unicode_string(self):
         return self.__unicode__()
 
+
 class AbstractCommonTrashModel(AbstractCommonModel):
     is_deleted = models.BooleanField(default=False)
     objects = CommonTrashManager()
@@ -166,16 +167,13 @@ class AbstractPriorityModel(models.Model):
             super(AbstractPriorityModel, self).save(*args, **kwargs)
 
 
-class AbstractAnwsomeModel(AbstractCommonTrashModel, AbstractCommonModel, AbstractCachedModel):
+class AbstractAnwsomeModel(AbstractCommonTrashModel, AbstractCachedModel):
     class Meta:
         abstract = True
 
 class CommonModel(AbstractAnwsomeModel):
 
     real_type = models.ForeignKey(ContentType, editable=False)
-
-    def __unicode__(self):
-        return ''
 
     def save(self, *args, **kwargs):
         if not self.id:
@@ -199,6 +197,7 @@ def get_upload_path(instance, filename):
 
     filename = '%s.%s' % (str(uuid1()), filename.split('.')[-1])
     return 'common/%d/%s' % (id, filename)
+
 
 class Image(models.Model):
     attach_to = models.ForeignKey(CommonModel, null=True, blank=True)

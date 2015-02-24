@@ -4,12 +4,13 @@ import ast
 from django.conf import settings
 from django.conf.urls import url
 from django.core.exceptions import ValidationError
+from django.utils import six
 from django.utils.cache import patch_vary_headers, patch_cache_control
 from tastypie.authentication import ApiKeyAuthentication
 from tastypie.authorization import Authorization
 from tastypie.exceptions import BadRequest
 from tastypie.http import HttpForbidden
-from tastypie.resources import ModelResource, csrf_exempt, sanitize
+from tastypie.resources import ModelResource, csrf_exempt, sanitize, ModelDeclarativeMetaclass, BaseModelResource
 from tastypie.serializers import Serializer
 from tastypie import http
 from tastypie import fields
@@ -18,6 +19,8 @@ from tastypie.utils import trailing_slash
 from odmbase.api.fields import SorlThumbnailField
 
 from odmbase.common.models import CommonModel, Image
+
+
 
 
 class VerboseSerializer(Serializer):
@@ -80,16 +83,24 @@ class CommonAnonymousPostApiKeyAuthentication(CommonApiKeyAuthentication):
 
 
 
-class CommonResource(ModelResource):
+class CommonModelDeclarativeMetaclass(ModelDeclarativeMetaclass):
+    def __new__(cls, name, bases, attrs):
 
-    unicode_string = fields.CharField(attribute='unicode_string', null=True, blank=True)
+        new_class = super(CommonModelDeclarativeMetaclass, cls).__new__(cls, name, bases, attrs)
+        setattr(new_class._meta, 'always_return_data', True)
+        setattr(new_class._meta, 'serializer', VerboseSerializer(formats=['json']))
+        setattr(new_class._meta, 'authentication', CommonApiKeyAuthentication())
+        setattr(new_class._meta, 'authorization', Authorization())
+
+        return new_class
+
+class CommonResource(six.with_metaclass(CommonModelDeclarativeMetaclass, BaseModelResource)):
+
+    unicode_string = fields.CharField(attribute='unicode_string', null=True, blank=True, readonly=True)
 
     class Meta:
         queryset = CommonModel.objects.all()
         resource_name = 'common'
-        authorization = Authorization()
-        always_return_data = True
-        serializer = VerboseSerializer(formats=['json'])
 
     def build_schema(self):
         base_schema = super(CommonResource, self).build_schema()
@@ -207,6 +218,9 @@ class CommonResource(ModelResource):
 class ImageAttachResource(ModelResource):
 
     image = fields.FileField(attribute='image', null=True, blank=True)
+    image_thumbnail_1x = SorlThumbnailField(attribute='image', thumb_options={'geometry': '400x400'})
+    image_thumbnail_2x = SorlThumbnailField(attribute='image', thumb_options={'geometry': '800x800'})
+    image_thumbnail_3x = SorlThumbnailField(attribute='image', thumb_options={'geometry': '1024x1024'})
 
     def prepend_urls(self):
         print self._meta.resource_name
@@ -255,7 +269,4 @@ class ImageResource(CommonResource):
         queryset = Image.objects.all()
         resource_name = 'image'
         #authentication = CommonApiKeyAuthentication() # Todo: uncomment this line
-        authorization = Authorization()
-        always_return_data = True
-        serializer = VerboseSerializer(formats=['json'])
 

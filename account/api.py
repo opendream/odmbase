@@ -36,9 +36,7 @@ class UserResource(ImageAttachResource, CommonResource):
         queryset = User.objects.all()
         resource_name = 'user'
         authentication = CommonAnonymousPostApiKeyAuthentication()
-        authorization = Authorization()
         always_return_data = True
-        serializer = VerboseSerializer(formats=['json'])
 
 
     def prepend_urls(self):
@@ -188,9 +186,7 @@ class UserReferenceResource(UserResource):
     class Meta:
         queryset = User.objects.all()
         resource_name = 'user'
-        authorization = Authorization()
-        always_return_data = True
-        serializer = VerboseSerializer(formats=['json'])
+        authentication = Authentication()
         #TODO: remove email field when upload image complete
         fields = ['unicode_string', 'first_name', 'last_name', 'image', 'email']
         allowed_methods = ['get']
@@ -214,15 +210,23 @@ class AutoAssignCreatedByMixinResource(ModelResource):
         return super(AutoAssignCreatedByMixinResource, self).obj_update(bundle, skip_errors=False, **kwargs)
 
 
+class AutoFilterCreatedByMixinResource(ModelResource):
+
+    created_by = fields.ForeignKey(UserReferenceResource, 'created_by', full=True)
+
+    def obj_get_list(self, bundle, **kwargs):
+        if not kwargs.get('created_by'):
+            kwargs['created_by'] = bundle.request.user.id
+
+        return super(AutoFilterCreatedByMixinResource, self).obj_get_list(bundle, **kwargs)
+
+
 class SocialSignResource(CommonResource):
 
     class Meta:
         queryset = User.objects.all()
         allowed_methods = ['post']
         authentication = Authentication()
-        authorization = Authorization()
-        always_return_data = True
-        serializer = VerboseSerializer(formats=['json'])
         excludes = ['password']
         resource_name = 'social_sign'
         return_resource = UserResource
