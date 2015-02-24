@@ -1,4 +1,4 @@
-
+import re
 from django.contrib.auth import get_user_model
 
 from social_auth.backends.pipeline.user import _ignore_field
@@ -27,9 +27,16 @@ def rewrite_username(username):
     return username
 
 def generate_username(details, user=None, user_exists=UserSocialAuth.simple_user_exists, *args, **kwargs):
+
     if user:
         return {'username': user.username}
+
     username = rewrite_username(details['username'])
+
+    validator = re.compile('^[\w.@+-]+$')
+    
+    if not validator.match(username):
+        username = rewrite_username(details['email'])
 
     return {'username': username}
 
@@ -39,12 +46,8 @@ def update_profile(backend, details, response, user=None, is_new=False, *args, *
         # TODO: update email
         pass
 
-    print details
-
     user.first_name = user.first_name or details.get('first_name')
     user.last_name = user.last_name or details.get('last_name')
-
-    print user.first_name
 
     if hasattr(user, 'gender') and not user.gender and response.get('gender'):
         user.gender = response.get('gender')
