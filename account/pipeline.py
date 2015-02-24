@@ -39,8 +39,12 @@ def update_profile(backend, details, response, user=None, is_new=False, *args, *
         # TODO: update email
         pass
 
-    user.first_name = not user.first_name and details.get('first_name')
-    user.last_name = not user.last_name and details.get('last_name')
+    print details
+
+    user.first_name = user.first_name or details.get('first_name')
+    user.last_name = user.last_name or details.get('last_name')
+
+    print user.first_name
 
     if hasattr(user, 'gender') and not user.gender and response.get('gender'):
         user.gender = response.get('gender')
