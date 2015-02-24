@@ -34,7 +34,7 @@ def generate_username(details, user=None, user_exists=UserSocialAuth.simple_user
     username = rewrite_username(details['username'])
 
     validator = re.compile('^[\w.@+-]+$')
-    
+
     if not validator.match(username):
         username = rewrite_username(details['email'])
 

@@ -10,7 +10,8 @@ from tastypie.authentication import ApiKeyAuthentication
 from tastypie.authorization import Authorization
 from tastypie.exceptions import BadRequest
 from tastypie.http import HttpForbidden
-from tastypie.resources import ModelResource, csrf_exempt, sanitize, ModelDeclarativeMetaclass, BaseModelResource
+from tastypie.resources import ModelResource, csrf_exempt, sanitize, BaseModelResource, DeclarativeMetaclass, \
+    ModelDeclarativeMetaclass
 from tastypie.serializers import Serializer
 from tastypie import http
 from tastypie import fields
@@ -19,8 +20,6 @@ from tastypie.utils import trailing_slash
 from odmbase.api.fields import SorlThumbnailField
 
 from odmbase.common.models import CommonModel, Image
-
-
 
 
 class VerboseSerializer(Serializer):
@@ -47,6 +46,7 @@ class VerboseSerializer(Serializer):
             return json.loads(content)
         except ValueError as e:
             raise BadRequest(u"Incorrect JSON format: Reason: \"{}\" (See www.json.org for more info.)".format(e.message))
+
 
 class CommonApiKeyAuthentication(ApiKeyAuthentication):
     def check_active(self, user):
@@ -82,28 +82,34 @@ class CommonAnonymousPostApiKeyAuthentication(CommonApiKeyAuthentication):
             return super(CommonAnonymousPostApiKeyAuthentication, self).get_identifier(request)
 
 
-
 class CommonModelDeclarativeMetaclass(ModelDeclarativeMetaclass):
+    pass
+
     def __new__(cls, name, bases, attrs):
+        meta = attrs.get('Meta')
+
+
+        if meta and hasattr(meta, 'queryset'):
+            setattr(meta, 'object_class', meta.queryset.model)
 
         new_class = super(CommonModelDeclarativeMetaclass, cls).__new__(cls, name, bases, attrs)
+
         setattr(new_class._meta, 'always_return_data', True)
         setattr(new_class._meta, 'serializer', VerboseSerializer(formats=['json']))
-        setattr(new_class._meta, 'authentication', CommonApiKeyAuthentication())
+        # TODO: fixed error
+        #setattr(new_class._meta, 'authentication', CommonApiKeyAuthentication())
         setattr(new_class._meta, 'authorization', Authorization())
 
         return new_class
 
-class CommonResource(six.with_metaclass(CommonModelDeclarativeMetaclass, BaseModelResource)):
+
+
+class CommonModelResource(six.with_metaclass(CommonModelDeclarativeMetaclass, BaseModelResource)):
 
     unicode_string = fields.CharField(attribute='unicode_string', null=True, blank=True, readonly=True)
 
-    class Meta:
-        queryset = CommonModel.objects.all()
-        resource_name = 'common'
-
     def build_schema(self):
-        base_schema = super(CommonResource, self).build_schema()
+        base_schema = super(CommonModelResource, self).build_schema()
         for f in self._meta.object_class._meta.fields:
             if f.name in base_schema['fields'] and f.choices:
                 base_schema['fields'][f.name].update({
@@ -121,7 +127,7 @@ class CommonResource(six.with_metaclass(CommonModelDeclarativeMetaclass, BaseMod
         if not request.META.get('CONTENT_TYPE', 'application/json').startswith('application/json') and not hasattr(request, '_body'):
             request._body = ''
 
-        return super(CommonResource, self).put_detail(request, **kwargs)
+        return super(CommonModelResource, self).put_detail(request, **kwargs)
 
     def deserialize(self, request, data, format=None):
 
@@ -137,11 +143,11 @@ class CommonResource(six.with_metaclass(CommonModelDeclarativeMetaclass, BaseMod
 
             return data
 
-        return super(CommonResource, self).deserialize(request, data, format)
+        return super(CommonModelResource, self).deserialize(request, data, format)
 
     def get_resource_uri(self, bundle_or_obj=None, url_name='api_dispatch_list'):
 
-        resource_uri = super(CommonResource, self).get_resource_uri(bundle_or_obj, url_name)
+        resource_uri = super(CommonModelResource, self).get_resource_uri(bundle_or_obj, url_name)
 
         if hasattr(self._meta, 'return_resource') and self._meta.return_resource:
             resource_uri = resource_uri.replace(self._meta.resource_name, self._meta.return_resource._meta.resource_name)
@@ -214,8 +220,15 @@ class CommonResource(six.with_metaclass(CommonModelDeclarativeMetaclass, BaseMod
 
         return wrapper
 
+class CommonResource(CommonModelResource):
 
-class ImageAttachResource(ModelResource):
+    class Meta:
+        queryset = CommonModel.objects.all()
+        resource_name = 'common'
+        authentication = CommonApiKeyAuthentication()
+
+
+class ImageAttachResource(CommonModelResource):
 
     image = fields.FileField(attribute='image', null=True, blank=True)
     image_thumbnail_1x = SorlThumbnailField(attribute='image', thumb_options={'geometry': '400x400'})
@@ -254,11 +267,10 @@ curl  -F "attach_to=api/v1/common/96/"
       -F "description=You are developer"
 localhost:8000/api/v1/image/
 '''
-class ImageResource(CommonResource):
+class ImageResource(CommonModelResource):
 
     attach_to = fields.ForeignKey(CommonResource, 'attach_to', null=True, blank=True)
     image = fields.FileField(attribute='image')
-    image_thumbnail_product_front = SorlThumbnailField(attribute='image', thumb_options={'geometry': '280x280'})
     image_thumbnail_1x = SorlThumbnailField(attribute='image', thumb_options={'geometry': '400x400'})
     image_thumbnail_2x = SorlThumbnailField(attribute='image', thumb_options={'geometry': '800x800'})
     image_thumbnail_3x = SorlThumbnailField(attribute='image', thumb_options={'geometry': '1024x1024'})
@@ -268,5 +280,5 @@ class ImageResource(CommonResource):
     class Meta:
         queryset = Image.objects.all()
         resource_name = 'image'
-        #authentication = CommonApiKeyAuthentication() # Todo: uncomment this line
+        authentication = CommonApiKeyAuthentication()
 

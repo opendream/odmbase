@@ -16,7 +16,7 @@ from django.contrib.auth import get_user_model
 from social_auth.backends.facebook import BACKENDS
 
 from odmbase.common.api import ImageAttachResource, CommonResource, CommonAnonymousPostApiKeyAuthentication, \
-    VerboseSerializer
+    VerboseSerializer, CommonModelResource
 
 from odmbase.common.constants import STATUS_PUBLISHED
 
@@ -26,7 +26,7 @@ User = get_user_model()
 # post image
 # curl -F "image=@hipster.png" localhost:8000/api/v1/user/87/set_image/
 
-class UserResource(ImageAttachResource, CommonResource):
+class UserResource(ImageAttachResource, CommonModelResource):
 
     STATUS_PUBLISHED = fields.IntegerField(attribute='STATUS_PUBLISHED')
     STATUS_PENDING = fields.IntegerField(attribute='STATUS_PENDING')
@@ -222,15 +222,19 @@ class AutoFilterCreatedByMixinResource(ModelResource):
         return super(AutoFilterCreatedByMixinResource, self).obj_get_list(bundle, **kwargs)
 
 
-class SocialSignResource(CommonResource):
+class SocialSignResource(CommonModelResource):
 
     class Meta:
         queryset = User.objects.all()
         allowed_methods = ['post']
         authentication = Authentication()
+        authorization = Authorization()
+        always_return_data = True
+        serializer = VerboseSerializer(formats=['json'])
         excludes = ['password']
         resource_name = 'social_sign'
         return_resource = UserResource
+
 
     def obj_create(self, bundle, **kwargs):
 
