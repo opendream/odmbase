@@ -187,6 +187,7 @@ class UserReferenceResource(UserResource):
         queryset = User.objects.all()
         resource_name = 'user'
         authentication = Authentication()
+        serializer = VerboseSerializer(formats=['json'])
         #TODO: remove email field when upload image complete
         fields = ['unicode_string', 'first_name', 'last_name', 'image', 'email']
         allowed_methods = ['get']

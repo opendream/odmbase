@@ -9,8 +9,16 @@ v1_api.register(CommonResource())
 v1_api.register(ImageResource())
 
 # Account
-from odmbase.account.api import UserResource, SocialSignResource
+try:
+    from account.api import UserResource
+except ImportError:
+    from odmbase.account.api import UserResource
+
+from odmbase.account.api import SocialSignResource
 v1_api.register(UserResource())
+
+
+
 
 try:
 
