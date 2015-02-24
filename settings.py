@@ -44,6 +44,7 @@ INSTALLED_APPS = (
     'social_auth',
 
     # Project
+    'odmbase',
     'odmbase.common',
     'account',
 
