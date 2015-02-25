@@ -231,12 +231,12 @@ class CommonResource(CommonModelResource):
 class ImageAttachResource(CommonModelResource):
 
     image = fields.FileField(attribute='image', null=True, blank=True)
-    image_thumbnail_1x = SorlThumbnailField(attribute='image', thumb_options={'geometry': '400x400'})
-    image_thumbnail_2x = SorlThumbnailField(attribute='image', thumb_options={'geometry': '800x800'})
-    image_thumbnail_3x = SorlThumbnailField(attribute='image', thumb_options={'geometry': '1024x1024'})
+    image_thumbnail_1x = SorlThumbnailField(attribute='image', thumb_options={'geometry': '400x400'}, readonly=True)
+    image_thumbnail_2x = SorlThumbnailField(attribute='image', thumb_options={'geometry': '800x800'}, readonly=True)
+    image_thumbnail_3x = SorlThumbnailField(attribute='image', thumb_options={'geometry': '1024x1024'}, readonly=True)
 
     def prepend_urls(self):
-        print self._meta.resource_name
+
         return [
             url(r"^(?P<resource_name>%s)/(?P<pk>\d+)/set_image%s$" % (self._meta.resource_name, trailing_slash()),
                 self.wrap_view('set_image'), name="api_set_image"),
@@ -246,7 +246,7 @@ class ImageAttachResource(CommonModelResource):
     def set_image(self, request=None, **kwargs):
         self.method_check(request, allowed=['post'])
         self.is_authenticated(request)
-        self.throttle_check(request)
+        #self.throttle_check(request)
 
         if not request.user:
             return self.create_response(

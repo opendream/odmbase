@@ -1,3 +1,4 @@
+import time
 import re
 from uuid import uuid1
 
@@ -28,7 +29,7 @@ except ImportError:
 '''
 
 def get_upload_path(instance, filename):
-    return 'user/%d/avatar.%s' % (instance.id, filename.split('.')[-1])
+    return 'user/%d/avatar-%d.%s' % (instance.id, int(time.time()), filename.split('.')[-1])
 
 class AbstractPeopleField(models.Model):
 

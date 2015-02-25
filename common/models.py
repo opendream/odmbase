@@ -175,6 +175,9 @@ class CommonModel(AbstractAnwsomeModel):
 
     real_type = models.ForeignKey(ContentType, editable=False)
 
+    def __unicode__(self):
+        return 'common %d' % self.id
+
     def save(self, *args, **kwargs):
         if not self.id:
             self.real_type = self._get_real_type()
