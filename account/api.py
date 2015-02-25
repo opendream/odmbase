@@ -30,7 +30,10 @@ class UserResource(ImageAttachResource, CommonModelResource):
 
     STATUS_PUBLISHED = fields.IntegerField(attribute='STATUS_PUBLISHED')
     STATUS_PENDING = fields.IntegerField(attribute='STATUS_PENDING')
-    password = fields.CharField(attribute='password', blank=True, null=True)
+    #password = fields.CharField(attribute='password', blank=True, null=True)
+
+    get_full_name = fields.CharField(attribute='get_full_name', null=True, blank=True, readonly=True)
+    get_short_name = fields.CharField(attribute='get_short_name', null=True, blank=True, readonly=True)
 
     class Meta:
         queryset = User.objects.all()
@@ -222,7 +225,10 @@ class AutoFilterCreatedByMixinResource(ModelResource):
         return super(AutoFilterCreatedByMixinResource, self).obj_get_list(bundle, **kwargs)
 
 
-class SocialSignResource(CommonModelResource):
+class SocialSignResource(ImageAttachResource, CommonModelResource):
+
+    get_full_name = fields.CharField(attribute='get_full_name', null=True, blank=True, readonly=True)
+    get_short_name = fields.CharField(attribute='get_short_name', null=True, blank=True, readonly=True)
 
     class Meta:
         queryset = User.objects.all()

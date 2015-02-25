@@ -134,6 +134,40 @@ class User(AbstractPeopleField, CommonModel, AbstractBaseUser, PermissionsMixin)
     def is_active(self):
         return self.status == STATUS_PUBLISHED
 
+    def get_full_name(self):
+        try:
+            full_name = '%s %s' % (self.first_name or '', self.last_name or '')
+            return full_name.strip()
+        except:
+            return ''
+
+    def get_short_name(self):
+        output = ''
+        try:
+            if self.first_name.strip() and self.last_name.strip():
+                output = '%s.%s' % (self.first_name.strip(), self.last_name.strip()[0])
+
+            elif self.first_name.strip():
+                output = self.first_name.strip()
+
+            elif self.last_name.strip():
+                output = self.last_name.strip()
+
+        except:
+            output = ''
+
+        if not output:
+            output = self.username
+
+        return output
+
+    def __unicode__(self, allow_email=False):
+        if allow_email:
+            return self.get_full_name() or self.email or self.username
+
+        return self.get_full_name() or self.username
+
+
     def save(self, *args, **kwargs):
         if not self.username:
             self.username = rewrite_username(self.email)

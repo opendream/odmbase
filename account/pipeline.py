@@ -43,8 +43,7 @@ def generate_username(details, user=None, user_exists=UserSocialAuth.simple_user
         result['email'] = '%s@%s.com' % (kwargs['uid'], kwargs['backend'].name)
     
     result['username'] = username
-    print result
-    return {'username': username}
+
     return result
 
 
