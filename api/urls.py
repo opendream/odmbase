@@ -9,16 +9,8 @@ v1_api.register(CommonResource())
 v1_api.register(ImageResource())
 
 # Account
-try:
-    from account.api import UserResource
-except ImportError:
-    from odmbase.account.api import UserResource
-
-from odmbase.account.api import SocialSignResource
+from account.api import UserResource
 v1_api.register(UserResource())
-
-
-
 
 try:
 
@@ -28,6 +20,8 @@ try:
 
 except ImportError:
     pass
+
+from odmbase.account.api import SocialSignResource
 
 urlpatterns = patterns('',
     (r'v1/user/', include(SocialSignResource().urls)),

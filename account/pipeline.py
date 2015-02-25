@@ -35,10 +35,17 @@ def generate_username(details, user=None, user_exists=UserSocialAuth.simple_user
 
     validator = re.compile('^[\w.@+-]+$')
 
+    result = {}
     if not validator.match(username):
         username = rewrite_username(details['email'])
 
+    if not details.get('email'):
+        result['email'] = '%s@%s.com' % (kwargs['uid'], kwargs['backend'].name)
+    
+    result['username'] = username
+    print result
     return {'username': username}
+    return result
 
 
 def update_profile(backend, details, response, user=None, is_new=False, *args, **kwargs):
@@ -48,6 +55,9 @@ def update_profile(backend, details, response, user=None, is_new=False, *args, *
 
     user.first_name = user.first_name or details.get('first_name')
     user.last_name = user.last_name or details.get('last_name')
+
+    print details
+    print response
 
     if hasattr(user, 'gender') and not user.gender and response.get('gender'):
         user.gender = response.get('gender')
