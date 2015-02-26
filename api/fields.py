@@ -27,10 +27,12 @@ class SorlThumbnailField(DictField):
             options = self.thumb_options.copy()
             geometry = options.pop('geometry', '200x200')
             thumbnail = get_thumbnail(value, geometry, **options)
+
             dict_thumbnail = dict(
                 url = thumbnail.url,
                 width = thumbnail.width,
-                height = thumbnail.height
+                height = thumbnail.height,
+                style={True: 'portrait', False: 'landscape'}[thumbnail.is_portrait()]
             )
         except ThumbnailError:
             dict_thumbnail = None
