@@ -29,9 +29,9 @@ class SorlThumbnailField(DictField):
             thumbnail = get_thumbnail(value, geometry, **options)
 
             dict_thumbnail = dict(
-                url = thumbnail.url,
-                width = thumbnail.width,
-                height = thumbnail.height,
+                url=thumbnail.url,
+                width=thumbnail.width,
+                height=thumbnail.height,
                 style={True: 'portrait', False: 'landscape'}[thumbnail.is_portrait()]
             )
         except ThumbnailError:
