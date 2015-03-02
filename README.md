@@ -14,7 +14,7 @@
 ### setup
 	mkdir projectname
 	cd projectname
-	git clone git@bitbucket.org:opendream/odmbase.git
+	git clone git@github.com:opendream/odmbase.git
 	cp -R odmbase/default/. .
 
 ### Virtualenvs
