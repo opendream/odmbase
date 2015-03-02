@@ -39,9 +39,6 @@ find all word "project_implement" and implement
 ### Account fields implementation
 account.models
 
-	class AbstractAccountField(models.Model):
-
+	class User(ODMUser):
 		.... your fields implement here ....
 
-		class Meta:
-			abstract = True
