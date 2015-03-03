@@ -40,7 +40,7 @@ class UserResource(ImageAttachResource, CommonModelResource):
         resource_name = 'user'
         authentication = CommonAnonymousPostApiKeyAuthentication()
         always_return_data = True
-
+        #excludes = ['password']
 
     def prepend_urls(self):
         return super(UserResource, self).prepend_urls() + [

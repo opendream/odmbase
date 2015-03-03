@@ -65,21 +65,39 @@ class CommonApiKeyAuthentication(ApiKeyAuthentication):
 
         return key_auth_check
 
+
+
 class CommonAnonymousPostApiKeyAuthentication(CommonApiKeyAuthentication):
 
     def is_authenticated(self, request, **kwargs):
 
-        if request.method in ['GET', 'POST'] and len(request.path.split('/')) == 3:
+        if request.method in ['GET', 'POST'] and not request.META.get('HTTP_AUTHORIZATION'):
             return True
         else:
             return super(CommonAnonymousPostApiKeyAuthentication, self).is_authenticated(request, **kwargs)
 
     def get_identifier(self, request):
 
-        if request.method in ['GET', 'POST'] and len(request.path.split('/')) == 3:
+        if request.method in ['GET', 'POST']:
             return "%s_%s" % (request.META.get('REMOTE_ADDR', 'noaddr'), request.META.get('REMOTE_HOST', 'nohost'))
         else:
             return super(CommonAnonymousPostApiKeyAuthentication, self).get_identifier(request)
+
+
+    def extract_credentials(self, request):
+
+        if request.META.get('HTTP_AUTHORIZATION') and request.META['HTTP_AUTHORIZATION'].lower().startswith('apikey '):
+            (auth_type, data) = request.META['HTTP_AUTHORIZATION'].split()
+
+            if auth_type.lower() != 'apikey':
+                raise ValueError("Incorrect authorization header.")
+
+            username, api_key = data.split(':', 1)
+        else:
+            username = request.GET.get('username') or request.POST.get('username')
+            api_key = request.GET.get('api_key') or request.POST.get('api_key')
+
+        return username, api_key
 
 
 class CommonModelDeclarativeMetaclass(ModelDeclarativeMetaclass):
