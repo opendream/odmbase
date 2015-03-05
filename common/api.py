@@ -124,7 +124,7 @@ class CommonModelDeclarativeMetaclass(ModelDeclarativeMetaclass):
 
 class CommonModelResource(six.with_metaclass(CommonModelDeclarativeMetaclass, BaseModelResource)):
 
-    unicode_string = fields.CharField(attribute='unicode_string', null=True, blank=True, readonly=True)
+    unicode_string = fields.CharField(attribute='unicode_string', readonly=True)
 
     def build_schema(self):
         base_schema = super(CommonModelResource, self).build_schema()
@@ -248,7 +248,7 @@ class CommonResource(CommonModelResource):
 
 class ImageAttachResource(CommonModelResource):
 
-    image = fields.FileField(attribute='image', null=True, blank=True)
+    image = fields.FileField(attribute='image', null=True)
     image_thumbnail_1x = SorlThumbnailField(attribute='image', thumb_options={'geometry': '400x400'}, readonly=True)
     image_thumbnail_2x = SorlThumbnailField(attribute='image', thumb_options={'geometry': '800x800'}, readonly=True)
     image_thumbnail_3x = SorlThumbnailField(attribute='image', thumb_options={'geometry': '1024x1024'}, readonly=True)
@@ -287,13 +287,13 @@ localhost:8000/api/v1/image/
 '''
 class ImageResource(CommonModelResource):
 
-    attach_to = fields.ForeignKey(CommonResource, 'attach_to', null=True, blank=True)
+    attach_to = fields.ForeignKey(CommonResource, 'attach_to', null=True)
     image = fields.FileField(attribute='image')
     image_thumbnail_1x = SorlThumbnailField(attribute='image', thumb_options={'geometry': '400x400'})
     image_thumbnail_2x = SorlThumbnailField(attribute='image', thumb_options={'geometry': '800x800'})
     image_thumbnail_3x = SorlThumbnailField(attribute='image', thumb_options={'geometry': '1024x1024'})
 
-    unicode_string = fields.CharField(attribute='unicode_string', null=True, blank=True)
+    unicode_string = fields.CharField(attribute='unicode_string', null=True)
 
     class Meta:
         queryset = Image.objects.all()
