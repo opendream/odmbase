@@ -17,6 +17,7 @@
 	git clone git@github.com:opendream/odmbase.git
 	cp -R odmbase/default/. .
 
+
 ### Virtualenvs
 	mkvirtualenv projectname
 
