@@ -75,6 +75,7 @@ TEMPLATE_CONTEXT_PROCESSORS = (
 )
 
 TEMPLATE_DIRS = (
+    os.path.join(BASE_DIR, 'conf/templates'),
     os.path.join(BASE_DIR, 'odmbase/templates'),
     os.path.join(BASE_DIR, 'templates'),
 )
