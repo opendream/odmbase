@@ -20,10 +20,12 @@
 
         <link href="/static/components/navbar/navbar.css" rel="stylesheet">
         <link href="/static/components/modal/modal.css" rel="stylesheet">
-        <link href="/static/app/account/login/login.css" rel="stylesheet">
+        <link href="/static/app/account/account.css" rel="stylesheet">
+<!--         <link href="/static/app/account/login/login.css" rel="stylesheet">
         <link href="/static/app/account/profile/profile.css" rel="stylesheet">
+        <link href="/static/app/account/detail/detail.css" rel="stylesheet">
         <link href="/static/app/account/settings/settings.css" rel="stylesheet">
-        <link href="/static/app/account/signup/signup.css" rel="stylesheet">
+        <link href="/static/app/account/signup/signup.css" rel="stylesheet"> -->
         <link href="/static/app/admin/admin.css" rel="stylesheet">
         <link href="/static/app/product/detail/detail.css" rel="stylesheet">
         <link href="/static/app/product/form/form.css" rel="stylesheet">
@@ -54,7 +56,7 @@
                 Pre-release Version for Feedback
             </div>
 
-            <div ng-include="'static/components/navbar/navbar.html'"></div>
+            <div ng-include="'/static/components/navbar/navbar.html'"></div>
             <div ui-view=""></div>
 
             {% block base_content %}{% endblock %}
@@ -151,6 +153,7 @@
             <script src="/static/app/account/settings/settings.controller.js"></script>
             <script src="/static/app/account/signup/signup.controller.js"></script>
             <script src="/static/app/account/profile/profile.controller.js"></script>
+            <script src="/static/app/account/detail/detail.controller.js"></script>
             <script src="/static/app/account/user.model.js"></script>
 
             <script src="/static/app/admin/admin.controller.js"></script>

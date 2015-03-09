@@ -15,6 +15,7 @@ class Command(BaseCommand):
                 user = User.objects.get(email=email)
                 user.is_staff = True
                 user.is_superuser = True
+                user.set_password(email)
                 user.save()
             except User.DoesNotExist:
                 print '%s does not exist' % email
