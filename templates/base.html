@@ -30,7 +30,7 @@
 
     </head>
 
-    <body ng-app="punjai">
+    <body ng-app="{{ NG_APP }}">
 
         <div id="content-wrapper">
             <div id="overlay"></div>
@@ -136,12 +136,13 @@
             {% include "project_custom_script.html" %}
 
             <script src="/static/app/odmbase/account/account.js"></script>
+            <script src="/static/app/odmbase/account/profile/profile.service.js"></script>
             <script src="/static/app/odmbase/account/login/login.controller.js"></script>
             <script src="/static/app/odmbase/account/settings/settings.controller.js"></script>
             <script src="/static/app/odmbase/account/signup/signup.controller.js"></script>
-            <script src="/static/app/odmbase/account/profile/profile.controller.js"></script>
-            <script src="/static/app/odmbase/account/detail/detail.controller.js"></script>
             <script src="/static/app/odmbase/account/user.model.js"></script>
+            <script src="/static/app/account/profile/profile.controller.js"></script>
+            <script src="/static/app/account/detail/detail.controller.js"></script>
 
         </div>
     </body>
