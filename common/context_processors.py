@@ -17,7 +17,7 @@ def helper(request):
         'STATUS_DELETED': STATUS_DELETED,
         'GOOGLE_ANALYTICS_KEY': settings.GOOGLE_ANALYTICS_KEY,
         'SITE_URL': settings.SITE_URL,
-
+        'NG_APP': settings.NG_APP,
         'DEBUG': int(settings.DEBUG)
     }
 

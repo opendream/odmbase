@@ -27,6 +27,8 @@ SITE_URL = 'http://%s' % SITE_DOMAIN
 SITE_LOGO_URL = '%simages/logo-project_implement_override.png' % STATIC_URL
 SITE_FAVICON_URL = '%simages/favicon-project_implement_override.png' % STATIC_URL
 
+NG_APP = 'project_implement_override'
+
 GOOGLE_ANALYTICS_KEY = ''
 REGISTER_CONFIRM = False
 
