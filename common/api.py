@@ -137,9 +137,24 @@ class CommonModelResource(six.with_metaclass(CommonModelDeclarativeMetaclass, Ba
 
     def dehydrate(self, bundle):
 
-        # TODO: implement me
-        bundle.data['can_edit'] = True
+        bundle = super(CommonModelResource, self).dehydrate(bundle)
+
+        # Handle permission field abit
+        bundle.data['can_edit'] = False
+        if bundle.request.user and bundle.request.user.is_authenticated() and bundle.request.user.is_staff:
+            bundle.data['can_edit'] = True
+            return bundle
+
+        if hasattr(bundle.obj, 'user_can_edit'):
+            bundle.data['can_edit'] = bundle.obj.user_can_edit(bundle.request.user)
+        else:
+            if hasattr(self, 'CREATED_BY_FIELD'):
+                bundle.data['can_edit'] = (getattr(bundle.obj, self.CREATED_BY_FIELD) == bundle.request.user)
+            elif hasattr(bundle.obj, 'created_by'):
+                bundle.data['can_edit'] = (bundle.obj.created_by == bundle.request.user)
+
         return bundle
+
 
     def put_detail(self, request, **kwargs):
         if not request.META.get('CONTENT_TYPE', 'application/json').startswith('application/json') and not hasattr(request, '_body'):
