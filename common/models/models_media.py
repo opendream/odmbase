@@ -16,7 +16,7 @@ def get_upload_path(instance, filename):
 
 
 class Image(models.Model):
-    attach_to = models.ForeignKey(CommonModel, null=True, blank=True)
+    attach_to = models.ForeignKey('common.CommonModel', null=True, blank=True)
     image = models.ImageField(upload_to=get_upload_path)
     title = models.CharField(max_length=255, null=True, blank=True)
     description = models.TextField(null=True, blank=True)
@@ -32,3 +32,26 @@ class Image(models.Model):
             self.title = ' '.join(self.image.name.split('.')[0:-1])
 
         super(Image, self).save(*args, **kwargs)
+
+
+class YoutubeLinkMixin(models.Model):
+    youtube_url = models.URLField(verbose_name=_('Youtube url'), blank=True, null=True)
+    youtube_id = models.CharField(max_length=25, verbose_name=_('Youtube id'), blank=True, null=True)
+
+    class Meta:
+        abstract = True
+
+
+class WebsiteMixin(models.Model):
+    website_url = models.URLField(max_length=512, verbose_name=_('Website url'), blank=True, null=True)
+    website_meta = models.TextField(verbose_name=_('Website meta'), blank=True, null=True)
+
+    class Meta:
+        abstract = True
+
+
+class QuoteMixin(models.Model):
+    quote = models.URLField(verbose_name=_('Quote'), blank=True, null=True)
+
+    class Meta:
+        abstract = True

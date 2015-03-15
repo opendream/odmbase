@@ -113,6 +113,13 @@ class AbstractCommonTrashModel(AbstractCommonModel):
         return super(AbstractCommonTrashModel, self).delete(*args, **kwargs)
 
 
+class CommonTrashReasonMixin(models.Model):
+    reason = models.TextField(verbose_name=_('Reason'), null=True, blank=True)
+
+    class Meta:
+        abstract = True
+
+
 class AbstractCachedModel(models.Model):
 
     cached_vars = ['status']
