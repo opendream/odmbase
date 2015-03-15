@@ -2,6 +2,8 @@ from uuid import uuid1
 
 from django import forms
 from django.contrib.auth import authenticate, get_user_model
+from django.contrib.auth.forms import UserCreationForm as DjangoUserCreationForm
+from django.contrib.auth.forms import UserChangeForm as DjangoUserChangeForm
 from django.contrib.auth.tokens import default_token_generator
 from django.contrib.sites.shortcuts import get_current_site
 from django.template import loader
@@ -52,8 +54,6 @@ class EmailAuthenticationForm(forms.Form):
 
     def get_user(self):
         return self.user_cache
-
-
 
 
 class PasswordResetForm(forms.Form):
@@ -228,3 +228,51 @@ class AccountRegisterForm(PasswordResetForm):
 
 
         return email
+
+
+class UserCreationForm(DjangoUserCreationForm):
+    """
+    A form that creates a user, with no privileges, from the given username and
+    password.
+    """
+    DjangoUserCreationForm.error_messages.update({
+        'duplicate_email': _("A user with that email already exists."),
+    })
+
+    class Meta:
+        model = get_user_model()
+        fields = ("username", "email")
+
+    def clean_username(self):
+        # Since User.username is unique, this check is redundant,
+        # but it sets a nicer error message than the ORM. See #13147.
+        UserModel = get_user_model()
+        username = self.cleaned_data["username"]
+        try:
+            UserModel._default_manager.get(username=username)
+        except UserModel.DoesNotExist:
+            return username
+        raise forms.ValidationError(
+            self.error_messages['duplicate_username'],
+            code='duplicate_username',
+        )
+
+    def clean_email(self):
+        # Since User.email is unique, this check is redundant,
+        # but it sets a nicer error message than the ORM. See #13147.
+        UserModel = get_user_model()
+        email = self.cleaned_data["email"]
+        try:
+            UserModel._default_manager.get(email=email)
+        except UserModel.DoesNotExist:
+            return email
+        raise forms.ValidationError(
+            self.error_messages['duplicate_email'],
+            code='duplicate_email',
+        )
+
+
+class UserChangeForm(DjangoUserChangeForm):
+    class Meta:
+        model = get_user_model()
+        fields = []
