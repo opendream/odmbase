@@ -190,6 +190,18 @@ class CommonModel(AbstractAnwsomeModel):
     def cast(self):
         return self.real_type.get_object_for_this_type(pk=self.pk)
 
+    def user_can_edit(self, user):
+
+        if user and user.is_authenticated() and user.is_staff:
+            return True
+
+        if hasattr(self, 'CREATED_BY_FIELD'):
+            return (getattr(self, self.CREATED_BY_FIELD) == user)
+        elif hasattr(self, 'created_by'):
+            return (self.created_by == user)
+
+        return False
+
 
 from uuid import uuid1
 def get_upload_path(instance, filename):
@@ -202,11 +214,14 @@ def get_upload_path(instance, filename):
     return 'common/%d/%s' % (id, filename)
 
 
-class Image(models.Model):
+class Image(AbstractPriorityModel):
     attach_to = models.ForeignKey(CommonModel, null=True, blank=True)
     image = models.ImageField(upload_to=get_upload_path)
     title = models.CharField(max_length=255, null=True, blank=True)
     description = models.TextField(null=True, blank=True)
+
+    class Meta:
+        ordering = ['ordering']
 
     def __unicode__(self):
         return self.title
@@ -219,3 +234,6 @@ class Image(models.Model):
             self.title = ' '.join(self.image.name.split('.')[0:-1])
 
         super(Image, self).save(*args, **kwargs)
+
+    def user_can_edit(self, user):
+        return not self.attach_to or self.attach_to.cast().user_can_edit(user)

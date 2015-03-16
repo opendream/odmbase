@@ -168,6 +168,9 @@ class User(AbstractPeopleField, CommonModel, AbstractBaseUser, PermissionsMixin)
 
         return self.get_full_name() or self.username
 
+    def user_can_edit(self, user):
+        return self == user
+
 
     def save(self, *args, **kwargs):
         if not self.username:

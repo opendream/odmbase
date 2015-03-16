@@ -3,12 +3,14 @@ import ast
 
 from django.conf import settings
 from django.conf.urls import url
-from django.core.exceptions import ValidationError
+from django.core.exceptions import ValidationError, ObjectDoesNotExist
 from django.utils import six
 from django.utils.cache import patch_vary_headers, patch_cache_control
 from tastypie.authentication import ApiKeyAuthentication
 from tastypie.authorization import Authorization
-from tastypie.exceptions import BadRequest
+from tastypie.bundle import Bundle
+from tastypie.exceptions import BadRequest, Unauthorized, ApiFieldError
+from tastypie.fields import ToManyField, NOT_PROVIDED
 from tastypie.http import HttpForbidden
 from tastypie.resources import ModelResource, csrf_exempt, sanitize, BaseModelResource, DeclarativeMetaclass, \
     ModelDeclarativeMetaclass
@@ -18,6 +20,7 @@ from tastypie import fields
 from django.core.serializers import json as djangojson
 from tastypie.utils import trailing_slash
 from odmbase.api.fields import SorlThumbnailField
+from odmbase.common.constants import STATUS_PUBLISHED
 
 from odmbase.common.models import CommonModel, Image
 
@@ -100,6 +103,53 @@ class CommonAnonymousPostApiKeyAuthentication(CommonApiKeyAuthentication):
         return username, api_key
 
 
+class CommonAuthorization(Authorization):
+    def read_list(self, object_list, bundle):
+        # TODO : can see draft pendding status
+        return object_list
+
+    def read_detail(self, object_list, bundle):
+        if hasattr(bundle.obj, 'status') and bundle.obj.status in [STATUS_PUBLISHED]:
+            return True
+
+        if bundle.obj.user_can_edit(bundle.request.user):
+            return True
+
+        if not hasattr(bundle.obj, 'status'):
+            return  True
+
+        return False
+
+    def create_list(self, object_list, bundle):
+
+        if bundle.request.user.is_authenticated():
+            return object_list
+        return []
+
+    def create_detail(self, object_list, bundle):
+        return bundle.request.user.is_authenticated()
+
+
+    def update_list(self, object_list, bundle):
+        allowed = []
+
+        # Since they may not all be saved, iterate over them.
+        for obj in object_list:
+            if obj.user_can_edit(bundle.request.user):
+                allowed.append(obj)
+
+        return allowed
+
+    def update_detail(self, object_list, bundle):
+        return bundle.obj.user_can_edit(bundle.request.user)
+
+    def delete_list(self, object_list, bundle):
+        return self.update_list(object_list, bundle)
+
+    def delete_detail(self, object_list, bundle):
+        return self.update_detail(object_list, bundle)
+
+
 class CommonModelDeclarativeMetaclass(ModelDeclarativeMetaclass):
     pass
 
@@ -116,7 +166,7 @@ class CommonModelDeclarativeMetaclass(ModelDeclarativeMetaclass):
         setattr(new_class._meta, 'serializer', VerboseSerializer(formats=['json']))
         # TODO: fixed error
         #setattr(new_class._meta, 'authentication', CommonApiKeyAuthentication())
-        setattr(new_class._meta, 'authorization', Authorization())
+        setattr(new_class._meta, 'authorization', CommonAuthorization())
 
         return new_class
 
@@ -315,3 +365,78 @@ class ImageResource(CommonModelResource):
         resource_name = 'image'
         authentication = CommonApiKeyAuthentication()
 
+
+
+class BetterManyToManyField(ToManyField):
+
+    def __init__(self, to, attribute, related_name=None, default=NOT_PROVIDED,
+                 null=False, blank=False, readonly=False, full=False,
+                 unique=False, help_text=None, use_in='all', full_list=True, full_detail=True,
+                 limit=None, filter=None):
+
+
+        super(BetterManyToManyField, self).__init__(
+            to, attribute, related_name=related_name, default=default,
+            null=null, blank=blank, readonly=readonly, full=full,
+            unique=unique, help_text=help_text, use_in=use_in,
+            full_list=full_list, full_detail=full_detail
+        )
+        self.m2m_bundles = []
+        self.limit = limit
+        self.filter = filter
+
+
+    def dehydrate(self, bundle, for_list=True):
+        if not bundle.obj or not bundle.obj.pk:
+            if not self.null:
+                raise ApiFieldError(
+                    "The model '%r' does not have a primary key and can not be used in a ToMany context." % bundle.obj)
+
+            return []
+
+        the_m2ms = None
+        previous_obj = bundle.obj
+        attr = self.attribute
+
+        if isinstance(self.attribute, six.string_types):
+            attrs = self.attribute.split('__')
+            the_m2ms = bundle.obj
+
+            for attr in attrs:
+                previous_obj = the_m2ms
+                try:
+                    the_m2ms = getattr(the_m2ms, attr, None)
+                except ObjectDoesNotExist:
+                    the_m2ms = None
+
+                if not the_m2ms:
+                    break
+
+        elif callable(self.attribute):
+            the_m2ms = self.attribute(bundle)
+
+        if not the_m2ms:
+            if not self.null:
+                raise ApiFieldError(
+                    "The model '%r' has an empty attribute '%s' and doesn't allow a null value." % (previous_obj, attr))
+
+            return []
+
+        self.m2m_resources = []
+        m2m_dehydrated = []
+
+        # TODO: Also model-specific and leaky. Relies on there being a
+        # ``Manager`` there.
+        the_m2ms_list = the_m2ms.all()
+        if self.filter:
+            the_m2ms_list = the_m2ms_list.filter(**filter)
+        if self.limit:
+            the_m2ms_list = the_m2ms_list[0:self.limit]
+
+        for m2m in the_m2ms_list:
+            m2m_resource = self.get_related_resource(m2m)
+            m2m_bundle = Bundle(obj=m2m, request=bundle.request)
+            self.m2m_resources.append(m2m_resource)
+            m2m_dehydrated.append(self.dehydrate_related(m2m_bundle, m2m_resource, for_list=for_list))
+
+        return m2m_dehydrated
