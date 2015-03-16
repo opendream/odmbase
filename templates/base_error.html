@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+
+    <title>{{ SITE_SLOGAN }}</title>
+    <link rel="shortcut icon" href="{{ SITE_FAVICON_URL }}" type="image/vnd.microsoft.icon">
+
+    <link href="/static/bower_components/font-awesome/css/font-awesome.min.css" rel="stylesheet">
+    <link href="/static/bower_components/angular-loading-bar/build/loading-bar.css" rel="stylesheet">
+    <link href="/static/bower_components/textAngular/src/textAngular.css" rel="stylesheet">
+    <link href="/static/bower_components/sweetalert/lib/sweet-alert.css" rel="stylesheet">
+    <link href='/static/bower_components/textAngular/src/textAngular.css' rel='stylesheet' >
+    <link href='/static/bower_components/jquery-ui/themes/smoothness/jquery-ui.css' rel='stylesheet' >
+
+    <link href="/static/components/bootstrap/css/bootstrap.min.css" type="text/css" rel="stylesheet">
+
+
+    <link href="/static/app/app.css" rel="stylesheet">
+
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="description" content="">
+    <meta name="viewport" content="width=device-width">
+
+    <base href="/">
+
+</head>
+<body>
+
+    <div id="content-wrapper">
+        {% block content %}{% endblock %}
+    </div>
+
+</body>
+</html>

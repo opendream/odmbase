@@ -33,6 +33,9 @@ class Image(models.Model):
 
         super(Image, self).save(*args, **kwargs)
 
+    def user_can_edit(self, user):
+        return not self.attach_to or self.attach_to.cast().user_can_edit(user)
+
 
 class YoutubeLinkMixin(models.Model):
     youtube_url = models.URLField(verbose_name=_('Youtube url'), blank=True, null=True)

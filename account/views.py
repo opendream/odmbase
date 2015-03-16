@@ -41,7 +41,6 @@ def login_facebook(request):
     if request.GET.get('next'):
         request.session['facebook_next'] = request.GET.get('next')
 
-    print 'vvvvv'
     from social_auth.views import auth
     return auth(request, 'facebook')
 

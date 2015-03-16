@@ -196,3 +196,15 @@ class CommonModel(AbstractAwesomeModel):
     def cast(self):
         return self.real_type.get_object_for_this_type(pk=self.pk)
 
+    def user_can_edit(self, user):
+
+        if user and user.is_authenticated() and user.is_staff:
+            return True
+
+        if hasattr(self, 'CREATED_BY_FIELD'):
+            return (getattr(self, self.CREATED_BY_FIELD) == user)
+        elif hasattr(self, 'created_by'):
+            return (self.created_by == user)
+
+        return False
+
