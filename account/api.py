@@ -6,6 +6,7 @@ from django.utils.http import urlsafe_base64_decode
 from tastypie import fields
 from tastypie.authentication import Authentication
 from tastypie.authorization import Authorization
+from tastypie.constants import ALL, ALL_WITH_RELATIONS
 from tastypie.exceptions import BadRequest
 from tastypie.http import HttpUnauthorized, HttpForbidden
 from tastypie.models import ApiKey, create_api_key
@@ -192,9 +193,12 @@ class UserReferenceResource(UserResource):
         authentication = Authentication()
         serializer = VerboseSerializer(formats=['json'])
         #TODO: remove email field when upload image complete
-        fields = ['unicode_string', 'first_name', 'last_name', 'email',
+        fields = ['id', 'unicode_string', 'first_name', 'last_name', 'email',
                   'image', 'image_thumbnail_1x', 'image_thumbnail_2x', 'image_thumbnail_3x']
         allowed_methods = ['get']
+        filtering = {
+          'id': ALL
+        }
 
 
 class AutoAssignCreatedByMixinResource(ModelResource):
@@ -221,7 +225,8 @@ class AutoFilterCreatedByMixinResource(ModelResource):
 
     def obj_get_list(self, bundle, **kwargs):
         if not kwargs.get('created_by'):
-            kwargs['created_by'] = bundle.request.user.id
+            kwargs['created_by__id'] = bundle.request.user.id
+            print bundle.request.user.id
 
         return super(AutoFilterCreatedByMixinResource, self).obj_get_list(bundle, **kwargs)
 
