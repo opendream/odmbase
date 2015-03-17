@@ -4,6 +4,8 @@ from uuid import uuid1
 from django.db import models
 from django.utils.translation import ugettext_lazy as _
 
+from odmbase.common.models import AbstractPriorityModel
+
 
 def get_upload_path(instance, filename):
     try:
@@ -15,11 +17,14 @@ def get_upload_path(instance, filename):
     return 'common/%d/%s' % (id, filename)
 
 
-class Image(models.Model):
+class Image(AbstractPriorityModel):
     attach_to = models.ForeignKey('common.CommonModel', null=True, blank=True)
     image = models.ImageField(upload_to=get_upload_path)
     title = models.CharField(max_length=255, null=True, blank=True)
     description = models.TextField(null=True, blank=True)
+
+    class Meta:
+        ordering = ['ordering']
 
     def __unicode__(self):
         return self.title
