@@ -208,3 +208,4 @@ class CommonModel(AbstractAwesomeModel):
     def cast(self):
         return self.real_type.get_object_for_this_type(pk=self.pk)
 
+
