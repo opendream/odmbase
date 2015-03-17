@@ -181,8 +181,6 @@ class UserResource(ImageAttachResource, CommonModelResource):
                 HttpUnauthorized,
             )
 
-models.signals.post_save.connect(create_api_key, sender=User)
-
 # Simplify fields or user resource
 class UserReferenceResource(UserResource):
 
@@ -199,16 +197,18 @@ class UserReferenceResource(UserResource):
 
 class AutoAssignCreatedByMixinResource(ModelResource):
 
-    created_by = fields.ForeignKey(UserReferenceResource, 'created_by', full=True)
+    CREATED_BY_FIELD = 'created_by'
+
+    created_by = fields.ForeignKey(UserReferenceResource, CREATED_BY_FIELD, full=True)
 
     def obj_create(self, bundle, **kwargs):
-        bundle.data['created_by'] = bundle.request.user
+        bundle.data[self.CREATED_BY_FIELD] = bundle.request.user
         return super(AutoAssignCreatedByMixinResource, self).obj_create(bundle, **kwargs)
 
 
     def obj_update(self, bundle, skip_errors=False, **kwargs):
         try:
-            del (bundle.data['created_by'])  # Prevent change created by from client
+            del (bundle.data[self.CREATED_BY_FIELD])  # Prevent change created by from client
         except:
             pass
 

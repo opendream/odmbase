@@ -114,6 +114,13 @@ class AbstractCommonTrashModel(AbstractCommonModel):
         abstract = True
 
 
+class CommonTrashReasonMixin(models.Model):
+    reason = models.TextField(verbose_name=_('Reason'), null=True, blank=True)
+
+    class Meta:
+        abstract = True
+
+
 class AbstractCachedModel(models.Model):
 
     cached_vars = ['status']
@@ -167,16 +174,16 @@ class AbstractPriorityModel(models.Model):
             super(AbstractPriorityModel, self).save(*args, **kwargs)
 
 
-class AbstractAnwsomeModel(AbstractCommonTrashModel, AbstractCachedModel):
+class AbstractAwesomeModel(AbstractCommonTrashModel, AbstractCachedModel):
     class Meta:
         abstract = True
 
-class CommonModel(AbstractAnwsomeModel):
+class CommonModel(AbstractAwesomeModel):
 
     real_type = models.ForeignKey(ContentType, editable=False)
 
     def __unicode__(self):
-        return 'common %d' % self.id
+        return 'common %d' % (self.id or 0)
 
     def save(self, *args, **kwargs):
         if not self.id:
@@ -219,3 +226,26 @@ class Image(models.Model):
             self.title = ' '.join(self.image.name.split('.')[0:-1])
 
         super(Image, self).save(*args, **kwargs)
+
+
+class YoutubeLinkMixin(models.Model):
+    youtube_url = models.URLField(verbose_name=_('Youtube url'), blank=True, null=True)
+    youtube_id = models.CharField(max_length=25, verbose_name=_('Youtube id'), blank=True, null=True)
+
+    class Meta:
+        abstract = True
+
+
+class WebsiteMixin(models.Model):
+    website_url = models.URLField(max_length=512, verbose_name=_('Website url'), blank=True, null=True)
+    website_meta = models.TextField(verbose_name=_('Website meta'), blank=True, null=True)
+
+    class Meta:
+        abstract = True
+
+
+class QuoteMixin(models.Model):
+    quote = models.URLField(verbose_name=_('Quote'), blank=True, null=True)
+
+    class Meta:
+        abstract = True

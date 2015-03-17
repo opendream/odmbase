@@ -13,6 +13,7 @@ from django.utils import timezone
 from django.utils.encoding import force_bytes
 from django.utils.http import urlsafe_base64_encode
 from django.utils.translation import ugettext_lazy as _
+from tastypie.models import create_api_key
 
 from odmbase.account.functions import rewrite_username
 from odmbase.common.constants import STATUS_CHOICES, STATUS_PUBLISHED, STATUS_PENDING
@@ -199,6 +200,8 @@ class User(AbstractPeopleField, CommonModel, AbstractBaseUser, PermissionsMixin)
         super(User, self).save(*args, **kwargs)
 
         if is_new and self.id and not password:
+            # For api login
+            create_api_key(self.__class__, instance=self)
 
             self.send_email_confirm(
                 email_template_name='account/email/register_email.html',
@@ -253,4 +256,3 @@ class User(AbstractPeopleField, CommonModel, AbstractBaseUser, PermissionsMixin)
             else:
                 html_email = None
             send_mail(subject, email, from_email, [user.email], html_message=html_email)
-
