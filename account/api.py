@@ -32,6 +32,7 @@ class UserResource(ImageAttachResource, CommonModelResource):
     STATUS_PUBLISHED = fields.IntegerField(attribute='STATUS_PUBLISHED')
     STATUS_PENDING = fields.IntegerField(attribute='STATUS_PENDING')
     #password = fields.CharField(attribute='password', null=True)
+    username = fields.CharField(attribute='username')
 
     get_full_name = fields.CharField(attribute='get_full_name', null=True, readonly=True)
     get_short_name = fields.CharField(attribute='get_short_name', null=True, readonly=True)
@@ -41,7 +42,12 @@ class UserResource(ImageAttachResource, CommonModelResource):
         resource_name = 'user'
         authentication = CommonAnonymousPostApiKeyAuthentication()
         always_return_data = True
+        detail_uri_name = 'username'
         #excludes = ['password']
+        filtering = {
+            'username': ALL,
+            'id': ALL
+        }
 
     def prepend_urls(self):
         return super(UserResource, self).prepend_urls() + [
@@ -190,14 +196,16 @@ class UserReferenceResource(UserResource):
     class Meta:
         queryset = User.objects.all()
         resource_name = 'user'
+        detail_uri_name = 'username'
         authentication = Authentication()
         serializer = VerboseSerializer(formats=['json'])
         #TODO: remove email field when upload image complete
-        fields = ['id', 'unicode_string', 'first_name', 'last_name', 'email',
+        fields = ['id', 'unicode_string', 'username',
                   'image', 'image_thumbnail_1x', 'image_thumbnail_2x', 'image_thumbnail_3x']
-        allowed_methods = ['get']
+        allowed_methods = ['get'],
         filtering = {
-          'id': ALL
+            'username': ALL,
+            'id': ALL
         }
 
 
