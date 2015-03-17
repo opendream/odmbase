@@ -42,10 +42,6 @@ class CommonTrashManager(models.Manager):
 
 class AbstractCommonModel(models.Model):
 
-    @property
-    def inst_name(self):
-        return self.__class__.__name__
-
     class Meta:
         abstract = True
 
@@ -76,6 +72,10 @@ class AbstractCommonModel(models.Model):
 
         super(AbstractCommonModel, self).save(*args, **kwargs)
 
+    @property
+    def inst_name(self):
+        return self.__class__.__name__
+
     def unicode_string(self):
         return self.__unicode__()
 
@@ -84,9 +84,11 @@ class AbstractCommonTrashModel(AbstractCommonModel):
     is_deleted = models.BooleanField(default=False)
     objects = CommonTrashManager()
 
+    class Meta:
+        abstract = True
+
     def save(self, *args, **kwargs):
         super(AbstractCommonTrashModel, self).save(*args, **kwargs)
-
 
     def trash(self, *args, **kwargs):
 
@@ -109,9 +111,6 @@ class AbstractCommonTrashModel(AbstractCommonModel):
 
     def remove(self, *args, **kwargs):
         return super(AbstractCommonTrashModel, self).delete(*args, **kwargs)
-
-    class Meta:
-        abstract = True
 
 
 class CommonTrashReasonMixin(models.Model):
@@ -140,14 +139,14 @@ class AbstractCachedModel(models.Model):
 
 class AbstractPermalink(AbstractCommonModel):
 
-    class Meta:
-        abstract = True
-
     permalink = models.CharField(max_length=255, unique=True,
         help_text=_('Required unique 30 characters or fewer. Letters, numbers and ./@/+/-/_ characters'),
         validators=[
             validators.RegexValidator(re.compile('^[\w.+-]+$'), _('Enter a valid permalink.'), 'invalid')
         ])
+
+    class Meta:
+        abstract = True
 
     def __unicode__(self):
         return self.permalink
@@ -160,7 +159,6 @@ class AbstractPriorityModel(models.Model):
 
     class Meta:
         abstract = True
-
 
     def save(self, *args, **kwargs):
         # Logic make from "test_uptodate_status (domain.tests.test_model.TestStatement)"
@@ -177,6 +175,19 @@ class AbstractPriorityModel(models.Model):
 class AbstractAwesomeModel(AbstractCommonTrashModel, AbstractCachedModel):
     class Meta:
         abstract = True
+
+    def user_can_edit(self, user):
+
+        if user and user.is_authenticated() and user.is_staff:
+            return True
+
+        if hasattr(self, 'CREATED_BY_FIELD'):
+            return (getattr(self, self.CREATED_BY_FIELD) == user)
+        elif hasattr(self, 'created_by'):
+            return (self.created_by == user)
+
+        return False
+
 
 class CommonModel(AbstractAwesomeModel):
 
@@ -197,55 +208,3 @@ class CommonModel(AbstractAwesomeModel):
     def cast(self):
         return self.real_type.get_object_for_this_type(pk=self.pk)
 
-
-from uuid import uuid1
-def get_upload_path(instance, filename):
-    try:
-        id = instance.attach_to.id
-    except:
-        id = 0
-
-    filename = '%s.%s' % (str(uuid1()), filename.split('.')[-1])
-    return 'common/%d/%s' % (id, filename)
-
-
-class Image(models.Model):
-    attach_to = models.ForeignKey(CommonModel, null=True, blank=True)
-    image = models.ImageField(upload_to=get_upload_path)
-    title = models.CharField(max_length=255, null=True, blank=True)
-    description = models.TextField(null=True, blank=True)
-
-    def __unicode__(self):
-        return self.title
-
-    def unicode_string(self):
-        return self.__unicode__()
-
-    def save(self, *args, **kwargs):
-        if not self.title and self.image:
-            self.title = ' '.join(self.image.name.split('.')[0:-1])
-
-        super(Image, self).save(*args, **kwargs)
-
-
-class YoutubeLinkMixin(models.Model):
-    youtube_url = models.URLField(verbose_name=_('Youtube url'), blank=True, null=True)
-    youtube_id = models.CharField(max_length=25, verbose_name=_('Youtube id'), blank=True, null=True)
-
-    class Meta:
-        abstract = True
-
-
-class WebsiteMixin(models.Model):
-    website_url = models.URLField(max_length=512, verbose_name=_('Website url'), blank=True, null=True)
-    website_meta = models.TextField(verbose_name=_('Website meta'), blank=True, null=True)
-
-    class Meta:
-        abstract = True
-
-
-class QuoteMixin(models.Model):
-    quote = models.URLField(verbose_name=_('Quote'), blank=True, null=True)
-
-    class Meta:
-        abstract = True

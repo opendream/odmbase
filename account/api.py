@@ -6,6 +6,7 @@ from django.utils.http import urlsafe_base64_decode
 from tastypie import fields
 from tastypie.authentication import Authentication
 from tastypie.authorization import Authorization
+from tastypie.constants import ALL
 from tastypie.exceptions import BadRequest
 from tastypie.http import HttpUnauthorized, HttpForbidden
 from tastypie.models import ApiKey, create_api_key
@@ -31,6 +32,7 @@ class UserResource(ImageAttachResource, CommonModelResource):
     STATUS_PUBLISHED = fields.IntegerField(attribute='STATUS_PUBLISHED')
     STATUS_PENDING = fields.IntegerField(attribute='STATUS_PENDING')
     #password = fields.CharField(attribute='password', null=True)
+    username = fields.CharField(attribute='username')
 
     get_full_name = fields.CharField(attribute='get_full_name', null=True, readonly=True)
     get_short_name = fields.CharField(attribute='get_short_name', null=True, readonly=True)
@@ -40,7 +42,11 @@ class UserResource(ImageAttachResource, CommonModelResource):
         resource_name = 'user'
         authentication = CommonAnonymousPostApiKeyAuthentication()
         always_return_data = True
+        detail_uri_name = 'username'
         #excludes = ['password']
+        filtering = {
+            'username': ALL
+        }
 
     def prepend_urls(self):
         return super(UserResource, self).prepend_urls() + [
@@ -181,34 +187,39 @@ class UserResource(ImageAttachResource, CommonModelResource):
                 HttpUnauthorized,
             )
 
+#models.signals.post_save.connect(create_api_key, sender=User)
+
 # Simplify fields or user resource
 class UserReferenceResource(UserResource):
 
     class Meta:
         queryset = User.objects.all()
         resource_name = 'user'
+        detail_uri_name = 'username'
         authentication = Authentication()
         serializer = VerboseSerializer(formats=['json'])
         #TODO: remove email field when upload image complete
-        fields = ['unicode_string', 'first_name', 'last_name', 'email',
+        fields = ['unicode_string', 'username',
                   'image', 'image_thumbnail_1x', 'image_thumbnail_2x', 'image_thumbnail_3x']
-        allowed_methods = ['get']
+        allowed_methods = ['get'],
+        filtering = {
+            'username': ALL,
+            'id': ALL
+        }
 
 
 class AutoAssignCreatedByMixinResource(ModelResource):
 
-    CREATED_BY_FIELD = 'created_by'
-
-    created_by = fields.ForeignKey(UserReferenceResource, CREATED_BY_FIELD, full=True)
+    created_by = fields.ForeignKey(UserReferenceResource, 'created_by', full=True)
 
     def obj_create(self, bundle, **kwargs):
-        bundle.data[self.CREATED_BY_FIELD] = bundle.request.user
+        bundle.data['created_by'] = bundle.request.user
         return super(AutoAssignCreatedByMixinResource, self).obj_create(bundle, **kwargs)
 
 
     def obj_update(self, bundle, skip_errors=False, **kwargs):
         try:
-            del (bundle.data[self.CREATED_BY_FIELD])  # Prevent change created by from client
+            del (bundle.data['created_by'])  # Prevent change created by from client
         except:
             pass
 

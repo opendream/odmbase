@@ -11,14 +11,11 @@ v1_api.register(ImageResource())
 # Account
 from account.api import UserResource
 v1_api.register(UserResource())
-from api.registers import API_RESOURCES
+
 try:
 
-
     from api.registers import API_RESOURCES
-    print API_RESOURCES
     for resource in API_RESOURCES:
-        print resource
         v1_api.register(resource)
 
 except ImportError:

@@ -169,6 +169,9 @@ class User(AbstractPeopleField, CommonModel, AbstractBaseUser, PermissionsMixin)
 
         return self.get_full_name() or self.username
 
+    def user_can_edit(self, user):
+        return self == user
+
 
     def save(self, *args, **kwargs):
         if not self.username:
@@ -199,14 +202,16 @@ class User(AbstractPeopleField, CommonModel, AbstractBaseUser, PermissionsMixin)
 
         super(User, self).save(*args, **kwargs)
 
-        if is_new and self.id and not password:
+        print is_new
+        print self.id
+        if is_new and self.id:
             # For api login
-            create_api_key(self.__class__, instance=self)
-
-            self.send_email_confirm(
-                email_template_name='account/email/register_email.html',
-                subject_template_name='account/email/register_email_subject.txt'
-            )
+            create_api_key(self.__class__, instance=self, created=True)
+            if not password:
+                self.send_email_confirm(
+                    email_template_name='account/email/register_email.html',
+                    subject_template_name='account/email/register_email_subject.txt'
+                )
 
 
     def send_email_confirm(self, subject_template_name='account/email/password_reset_email_subject.txt',
