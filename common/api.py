@@ -150,12 +150,16 @@ class CommonAuthorization(Authorization):
         return self.update_detail(object_list, bundle)
 
 
+class CommonAnonymousPostAuthorization(CommonAuthorization):
+    def create_detail(self, object_list, bundle):
+        print bundle.request.user
+        return True
+
+
 class CommonModelDeclarativeMetaclass(ModelDeclarativeMetaclass):
-    pass
 
     def __new__(cls, name, bases, attrs):
         meta = attrs.get('Meta')
-
 
         if meta and hasattr(meta, 'queryset'):
             setattr(meta, 'object_class', meta.queryset.model)
@@ -164,9 +168,11 @@ class CommonModelDeclarativeMetaclass(ModelDeclarativeMetaclass):
 
         setattr(new_class._meta, 'always_return_data', True)
         setattr(new_class._meta, 'serializer', VerboseSerializer(formats=['json']))
-        # TODO: fixed error
-        #setattr(new_class._meta, 'authentication', CommonApiKeyAuthentication())
-        setattr(new_class._meta, 'authorization', CommonAuthorization())
+
+        if not getattr(new_class._meta, 'authentication'):
+            setattr(new_class._meta, 'authentication', CommonApiKeyAuthentication())
+        if not getattr(new_class._meta, 'authorization'):
+            setattr(new_class._meta, 'authorization', CommonAuthorization())
 
         return new_class
 
@@ -233,6 +239,7 @@ class CommonModelResource(six.with_metaclass(CommonModelDeclarativeMetaclass, Ba
         resource_uri = super(CommonModelResource, self).get_resource_uri(bundle_or_obj, url_name)
 
         if hasattr(self._meta, 'return_resource') and self._meta.return_resource:
+            print self._meta.return_resource._meta.resource_name
             resource_uri = resource_uri.replace(self._meta.resource_name, self._meta.return_resource._meta.resource_name)
 
         return resource_uri

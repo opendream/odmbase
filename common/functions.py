@@ -116,7 +116,6 @@ def instance_save_image_from_url(instance, image_url, field_name='image', rand=F
                     file_name = '%s.jpg' % file_name
                 break
 
-        print file_name
 
         if rand:
             image_url = '%s?a=%s' % (image_url, random.randint(1, 100000000000))

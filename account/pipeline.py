@@ -55,8 +55,6 @@ def update_profile(backend, details, response, user=None, is_new=False, *args, *
     user.first_name = user.first_name or details.get('first_name')
     user.last_name = user.last_name or details.get('last_name')
 
-    print details
-    print response
 
     if hasattr(user, 'gender') and not user.gender and response.get('gender'):
         user.gender = response.get('gender')
