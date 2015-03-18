@@ -86,7 +86,7 @@ class UserResource(ImageAttachResource, CommonModelResource):
                 except ApiKey.DoesNotExist:
                     return self.create_response(
                         request, {
-                            'error': 'Missing key',
+                            'error': 'The email you entered does not belong to any account.',
                         },
                         HttpForbidden,
                     )
@@ -101,14 +101,14 @@ class UserResource(ImageAttachResource, CommonModelResource):
             else:
                 return self.create_response(
                     request, {
-                        'error': 'Your account disabled',
+                        'error': 'Your account disabled. Please, contact administrator',
                     },
                     HttpForbidden,
                 )
         else:
             return self.create_response(
                 request, {
-                    'error': 'invalid login',
+                    'error': 'The password you entered is incorrect. Please try again.',
                     'skip_login_redir': True,
                 },
                 HttpUnauthorized,
