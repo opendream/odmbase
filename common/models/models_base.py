@@ -45,7 +45,7 @@ class AbstractCommonModel(models.Model):
     class Meta:
         abstract = True
 
-    def save(self, *args, **kwargs):
+    def save(self, commit=True, force_insert=False, force_update=False, *args, **kwargs):
 
         self.full_clean()
 
@@ -87,7 +87,7 @@ class AbstractCommonTrashModel(AbstractCommonModel):
     class Meta:
         abstract = True
 
-    def save(self, *args, **kwargs):
+    def save(self, commit=True, force_insert=False, force_update=False, *args, **kwargs):
         super(AbstractCommonTrashModel, self).save(*args, **kwargs)
 
     def trash(self, *args, **kwargs):
@@ -124,6 +124,9 @@ class AbstractCachedModel(models.Model):
 
     cached_vars = ['status']
 
+    class Meta:
+        abstract = True
+
     def __init__(self, *args, **kwargs):
         super(AbstractCachedModel, self).__init__(*args, **kwargs)
         self.var_cache = {}
@@ -132,9 +135,6 @@ class AbstractCachedModel(models.Model):
                 self.var_cache[var] = copy.copy(getattr(self, var))
             except:
                 self.var_cache[var] = None
-
-    class Meta:
-        abstract = True
 
 
 class AbstractPermalink(AbstractCommonModel):
@@ -160,7 +160,7 @@ class AbstractPriorityModel(models.Model):
     class Meta:
         abstract = True
 
-    def save(self, *args, **kwargs):
+    def save(self, commit=True, force_insert=False, force_update=False, *args, **kwargs):
         # Logic make from "test_uptodate_status (domain.tests.test_model.TestStatement)"
 
         if not self.id:
@@ -196,7 +196,7 @@ class CommonModel(AbstractAwesomeModel):
     def __unicode__(self):
         return 'common %d' % (self.id or 0)
 
-    def save(self, *args, **kwargs):
+    def save(self, commit=True, force_insert=False, force_update=False, *args, **kwargs):
         if not self.id:
             self.real_type = self._get_real_type()
 
