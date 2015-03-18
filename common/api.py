@@ -7,7 +7,7 @@ from django.core.exceptions import ValidationError, ObjectDoesNotExist
 from django.utils import six
 from django.utils.cache import patch_vary_headers, patch_cache_control
 from tastypie.authentication import ApiKeyAuthentication
-from tastypie.authorization import Authorization
+from tastypie.authorization import Authorization, ReadOnlyAuthorization
 from tastypie.bundle import Bundle
 from tastypie.exceptions import BadRequest, Unauthorized, ApiFieldError
 from tastypie.fields import ToManyField, NOT_PROVIDED
@@ -109,7 +109,7 @@ class CommonAuthorization(Authorization):
             return True
 
         if not hasattr(bundle.obj, 'status'):
-            return  True
+            return True
 
         return False
 
@@ -162,11 +162,12 @@ class CommonModelDeclarativeMetaclass(ModelDeclarativeMetaclass):
         setattr(new_class._meta, 'always_return_data', True)
         setattr(new_class._meta, 'serializer', VerboseSerializer(formats=['json']))
 
-        if not getattr(new_class._meta, 'authentication'):
-            setattr(new_class._meta, 'authentication', CommonApiKeyAuthentication())
-        if not getattr(new_class._meta, 'authorization'):
-            setattr(new_class._meta, 'authorization', CommonAuthorization())
+        #if not getattr(new_class._meta, 'authentication'):
+        setattr(new_class._meta, 'authentication', CommonApiKeyAuthentication())
 
+        if getattr(new_class._meta, 'authorization').__class__ is ReadOnlyAuthorization:
+            setattr(new_class._meta, 'authorization', CommonAuthorization())
+            
         return new_class
 
 
@@ -232,7 +233,6 @@ class CommonModelResource(six.with_metaclass(CommonModelDeclarativeMetaclass, Ba
         resource_uri = super(CommonModelResource, self).get_resource_uri(bundle_or_obj, url_name)
 
         if hasattr(self._meta, 'return_resource') and self._meta.return_resource:
-            print self._meta.return_resource._meta.resource_name
             resource_uri = resource_uri.replace(self._meta.resource_name, self._meta.return_resource._meta.resource_name)
 
         return resource_uri
