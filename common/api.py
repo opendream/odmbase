@@ -52,13 +52,6 @@ class VerboseSerializer(Serializer):
 
 
 class CommonApiKeyAuthentication(ApiKeyAuthentication):
-    def check_active(self, user):
-        if not self.require_active:
-            # Ignore & move on.
-            return True
-
-        return user.status == user.STATUS_PUBLISHED
-
     def is_authenticated(self, request, **kwargs):
 
         key_auth_check = super(CommonApiKeyAuthentication, self).is_authenticated(request, **kwargs)
