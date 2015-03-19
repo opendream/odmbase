@@ -249,8 +249,8 @@ class SocialSignResource(ImageAttachResource, CommonModelResource):
     class Meta:
         queryset = User.objects.all()
         allowed_methods = ['post']
-        authentication = Authentication()
-        authorization = Authorization()
+        authorization = CommonAnonymousPostAuthorization()
+        authentication = CommonAnonymousPostApiKeyAuthentication()
         always_return_data = True
         serializer = VerboseSerializer(formats=['json'])
         excludes = ['password']

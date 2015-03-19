@@ -55,7 +55,6 @@ class CommonApiKeyAuthentication(ApiKeyAuthentication):
     def is_authenticated(self, request, **kwargs):
 
         key_auth_check = super(CommonApiKeyAuthentication, self).is_authenticated(request, **kwargs)
-
         if request.method == 'GET' or key_auth_check:
             return True
 
@@ -102,6 +101,7 @@ class CommonAuthorization(Authorization):
         return object_list
 
     def read_detail(self, object_list, bundle):
+
         if hasattr(bundle.obj, 'status') and bundle.obj.status in [STATUS_PUBLISHED]:
             return True
 
@@ -145,7 +145,6 @@ class CommonAuthorization(Authorization):
 
 class CommonAnonymousPostAuthorization(CommonAuthorization):
     def create_detail(self, object_list, bundle):
-        print bundle.request.user
         return True
 
 
@@ -163,7 +162,7 @@ class CommonModelDeclarativeMetaclass(ModelDeclarativeMetaclass):
         setattr(new_class._meta, 'serializer', VerboseSerializer(formats=['json']))
 
         #if not getattr(new_class._meta, 'authentication'):
-        setattr(new_class._meta, 'authentication', CommonApiKeyAuthentication())
+        #setattr(new_class._meta, 'authentication', CommonApiKeyAuthentication())
 
         if getattr(new_class._meta, 'authorization').__class__ is ReadOnlyAuthorization:
             setattr(new_class._meta, 'authorization', CommonAuthorization())
