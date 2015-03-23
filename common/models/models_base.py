@@ -2,13 +2,17 @@
 
 import copy
 from uuid import uuid1
+from django.conf import settings
 from django.contrib.contenttypes.models import ContentType
 from django.core import validators
 from django.db import models
+from django.utils import timezone
+from django.utils.html import strip_tags
 from django.utils.translation import ugettext_lazy as _
 import bleach
 
 import re
+from odmbase.common.constants import STATUS_CHOICES, STATUS_PUBLISHED
 
 
 class CommonTrashManager(models.Manager):
@@ -41,6 +45,8 @@ class CommonTrashManager(models.Manager):
 
 
 class AbstractCommonModel(models.Model):
+
+    CACHE_SEO_META = None
 
     class Meta:
         abstract = True
@@ -78,6 +84,54 @@ class AbstractCommonModel(models.Model):
 
     def unicode_string(self):
         return self.__unicode__()
+
+    def seo_meta(self):
+
+        if self.CACHE_SEO_META:
+            return self.CACHE_SEO_META
+
+        # title ------------------------------------------
+        title = self.unicode_string()
+
+        # description ------------------------------------
+        description = ''
+        description_field = hasattr(self, 'SEO') and self.SEO.get('description')
+        if description_field:
+            if type(description_field) is list:
+                description = ['%s\n%s' % (description, getattr(self, field)) for field in description_field]
+            else:
+                description = getattr(self, description_field)
+
+        elif hasattr(self, 'description'):
+            description = self.description
+
+        # image ------------------------------------------
+        image = ''
+        image_field = hasattr(self, 'SEO') and self.SEO.get('image')
+        if image_field:
+            image = getattr(self, image_field)
+            try:
+                image = image.all()[0].image
+            except:
+                pass
+
+        elif hasattr(self, 'image'):
+            image = self.image
+        elif hasattr(self, 'image_set'):
+            try:
+                image = self.image_set.all()[0].image
+            except:
+                pass
+
+        image = image and image.url
+
+        self.CACHE_SEO_META = {
+            'title': strip_tags(title),
+            'description': strip_tags(description),
+            'image': image
+        }
+        return self.CACHE_SEO_META
+
 
 
 class AbstractCommonTrashModel(AbstractCommonModel):
@@ -193,12 +247,23 @@ class CommonModel(AbstractAwesomeModel):
 
     real_type = models.ForeignKey(ContentType, editable=False)
 
+    common_created_by = models.ForeignKey('self', null=True, blank=True)
+    status = models.IntegerField(choices=STATUS_CHOICES, default=STATUS_PUBLISHED)
+
+    created = models.DateTimeField(_('Created'), auto_now_add=True, default=timezone.now())
+    changed = models.DateTimeField(_('Changed'), auto_now=True, default=timezone.now())
+
     def __unicode__(self):
         return 'common %d' % (self.id or 0)
 
     def save(self, commit=True, force_insert=False, force_update=False, *args, **kwargs):
         if not self.id:
             self.real_type = self._get_real_type()
+
+        if hasattr(self, 'created_by'):
+            self.common_created_by = self.created_by
+        elif hasattr(self, 'CREATED_BY_FIELD'):
+            self.common_created_by = getattr(self, self.CREATED_BY_FIELD)
 
         super(CommonModel, self).save(*args, **kwargs)
 
