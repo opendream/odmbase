@@ -250,8 +250,8 @@ class CommonModel(AbstractAwesomeModel):
     common_created_by = models.ForeignKey('self', null=True, blank=True)
     status = models.IntegerField(choices=STATUS_CHOICES, default=STATUS_PUBLISHED)
 
-    created = models.DateTimeField(_('Created'), auto_now_add=True, default=timezone.now())
-    changed = models.DateTimeField(_('Changed'), auto_now=True, default=timezone.now())
+    created = models.DateTimeField(_('Created'), auto_now_add=True, default=timezone.now)
+    changed = models.DateTimeField(_('Changed'), auto_now=True, default=timezone.now)
 
     def __unicode__(self):
         return 'common %d' % (self.id or 0)
@@ -273,4 +273,4 @@ class CommonModel(AbstractAwesomeModel):
     def cast(self):
         return self.real_type.get_object_for_this_type(pk=self.pk)
 
-
+CommonModel._meta.get_field('status').default = STATUS_PUBLISHED
