@@ -102,13 +102,17 @@ class CommonAuthorization(Authorization):
 
     def read_detail(self, object_list, bundle):
 
-        if hasattr(bundle.obj, 'status') and bundle.obj.status in [STATUS_PUBLISHED]:
+        if hasattr(bundle.obj, 'status') and bundle.obj.status > 0:
             return True
 
         if bundle.obj.user_can_edit(bundle.request.user):
             return True
 
         if not hasattr(bundle.obj, 'status'):
+            return True
+
+        # read schema
+        if not bundle.obj.id:
             return True
 
         return False
