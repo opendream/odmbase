@@ -43,7 +43,7 @@
                 Pre-release Version for Feedback
             </div>
 
-            <div ng-include="'/static/components/navbar/navbar.html'"></div>
+            <div ng-show="!hideNavbar" ng-include="'/static/components/navbar/navbar.html'"></div>
             <div ui-view=""></div>
 
             {% block base_content %}{% endblock %}
@@ -117,6 +117,7 @@
             <script src="/static/bower_components/ng-tags-input/ng-tags-input.min.js"></script>
             <script src="/static/bower_components/angular-route/angular-route.js"></script>
             <script src="/static/bower_components/angular-dropdowns/dist/angular-dropdowns.js"></script>
+            <script src="/static/bower_components/ngInfiniteScroll/build/ng-infinite-scroll.js"></script>
             <!-- endbower -->
             <script src="/static/bower_components/jquery-cycle2/build/plugin/jquery.cycle2.center.min.js" type="text/javascript" ></script>
             <script src="/static/bower_components/jquery-cycle2/build/plugin/jquery.cycle2.swipe.min.js" type="text/javascript" ></script>
