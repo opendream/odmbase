@@ -111,6 +111,10 @@ class CommonAuthorization(Authorization):
         if not hasattr(bundle.obj, 'status'):
             return True
 
+        # read schema
+        if not bundle.obj.id:
+            return True
+
         return False
 
     def create_list(self, object_list, bundle):
