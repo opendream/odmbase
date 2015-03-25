@@ -253,6 +253,12 @@ class CommonModel(AbstractAwesomeModel):
     created = models.DateTimeField(_('Created'), auto_now_add=True, default=timezone.now)
     changed = models.DateTimeField(_('Changed'), auto_now=True, default=timezone.now)
 
+    def __init__(self, *args, **kwargs):
+        super(CommonModel, self).__init__(*args, **kwargs)
+
+        if hasattr(self, 'DEFAULT_STATUS'):
+            self._meta.get_field('status').default = self.DEFAULT_STATUS
+
     def __unicode__(self):
         return 'common %d' % (self.id or 0)
 

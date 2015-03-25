@@ -55,7 +55,7 @@ class CommonApiKeyAuthentication(ApiKeyAuthentication):
     def is_authenticated(self, request, **kwargs):
 
         key_auth_check = super(CommonApiKeyAuthentication, self).is_authenticated(request, **kwargs)
-        if request.method == 'GET' or key_auth_check:
+        if request.method == 'GET' or type(key_auth_check) is not type(self._unauthorized()):
             return True
 
         return key_auth_check
@@ -102,13 +102,17 @@ class CommonAuthorization(Authorization):
 
     def read_detail(self, object_list, bundle):
 
-        if hasattr(bundle.obj, 'status') and bundle.obj.status in [STATUS_PUBLISHED]:
+        if hasattr(bundle.obj, 'status') and bundle.obj.status > 0:
             return True
 
         if bundle.obj.user_can_edit(bundle.request.user):
             return True
 
         if not hasattr(bundle.obj, 'status'):
+            return True
+
+        # read schema
+        if not bundle.obj.id:
             return True
 
         return False
