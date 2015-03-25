@@ -59,7 +59,7 @@ class WebsiteMixin(models.Model):
 
 
 class QuoteMixin(models.Model):
-    quote = models.URLField(verbose_name=_('Quote'), blank=True, null=True)
+    quote = models.TextField(verbose_name=_('Quote'), blank=True, null=True)
 
     class Meta:
         abstract = True
