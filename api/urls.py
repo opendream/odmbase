@@ -1,4 +1,4 @@
-from django.conf.urls import patterns, include
+from django.conf.urls import patterns, include, url
 from tastypie.api import Api
 
 v1_api = Api(api_name='v1')
@@ -24,6 +24,7 @@ except ImportError:
 from odmbase.account.api import SocialSignResource
 
 urlpatterns = patterns('',
+    url(r'v1/website-meta/$', 'odmbase.common.api.scrap_website_meta', name='scrap_website_meta'),
     (r'v1/user/', include(SocialSignResource().urls)),
     (r'', include(v1_api.urls)),
 )
