@@ -178,6 +178,8 @@ class CommonModelDeclarativeMetaclass(ModelDeclarativeMetaclass):
 class CommonModelResource(six.with_metaclass(CommonModelDeclarativeMetaclass, BaseModelResource)):
 
     unicode_string = fields.CharField(attribute='unicode_string', readonly=True)
+    common_resource_uri = fields.ToOneField('odmbase.common.api.CommonResource', 'commonmodel_ptr', readonly=True, null=True)
+
 
     def build_schema(self):
         base_schema = super(CommonModelResource, self).build_schema()
@@ -192,6 +194,11 @@ class CommonModelResource(six.with_metaclass(CommonModelDeclarativeMetaclass, Ba
 
         bundle = super(CommonModelResource, self).dehydrate(bundle)
 
+        #if bundle.data.get('common_ptr'):
+        #    bundle.data['common_resource_uri'] = bundle.data['common_ptr']
+        #else:
+        #    bundle.data['common_resource_uri'] = self.get_resource_uri(bundle)
+#
         # Handle permission field abit
         bundle.data['can_edit'] = False
         if bundle.request.user and bundle.request.user.is_authenticated() and bundle.request.user.is_staff:
