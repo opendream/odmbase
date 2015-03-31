@@ -1,4 +1,5 @@
 
+import json
 from uuid import uuid1
 
 from django.db import models
@@ -56,6 +57,11 @@ class WebsiteMixin(models.Model):
 
     class Meta:
         abstract = True
+
+    def get_website_meta(self):
+        if self.website_meta:
+            return json.loads(self.website_meta)
+        return {}
 
 
 class QuoteMixin(models.Model):

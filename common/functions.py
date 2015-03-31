@@ -1,22 +1,21 @@
 import os
 import random
+import re
 import urllib
-from django.conf import settings
+import urllib2
+import uuid as _uu
+
+from django import template
 from django.contrib.admin.forms import AdminAuthenticationForm
 from django.contrib.auth import REDIRECT_FIELD_NAME, login
 from django.core.files import File
-from django.utils.translation import ugettext_lazy as _
-
-
-from django import template
-from django.utils.safestring import mark_safe
-from django.utils.text import normalize_newlines, slugify
-
 from django.utils.encoding import force_bytes
 from django.utils.http import urlsafe_base64_encode
+from django.utils.safestring import mark_safe
+from django.utils.text import normalize_newlines, slugify
+from django.utils.translation import ugettext_lazy as _
 
-import re
-import uuid as _uu
+from bs4 import BeautifulSoup
 
 register = template.Library()
 
@@ -128,3 +127,48 @@ def instance_save_image_from_url(instance, image_url, field_name='image', rand=F
 
     else:
         raise AttributeError
+
+
+def scrap_website_meta(url):
+    raw = urllib2.urlopen(url, timeout=10)
+    html = raw.read()
+    doc = BeautifulSoup(html)
+
+    return {
+        'url': url,
+        'title': _scrap_title(doc),
+        'description': _scrap_description(doc),
+        'image': _scrap_image(doc),
+    }
+
+def _scrap_title(doc):
+    if doc.find(property='og:title'):
+        title = doc.find(property='og:title')['content']
+    elif doc.find(attrs={'name': 'twitter:title'}):
+        title = doc.find(attrs={'name': 'twitter:title'})['content']
+    else:
+        title = doc.head.title.text
+    return title
+
+def _scrap_description(doc):
+    description = ''
+    if doc.find(property='og:description'):
+        description = doc.find(property='og:description')['content']
+    elif doc.find(attrs={'name': 'twitter:description'}):
+        description = doc.find(attrs={'name': 'twitter:description'})['content']
+    elif doc.find(attrs={'name': 'description'}):
+        description = doc.find(attrs={'name': 'description'})['content']
+    return description or ''
+
+def _scrap_image(doc):
+    image = ''
+    if doc.find(property='og:image'):
+        image = doc.find(property='og:image')['content']
+    elif doc.find(attrs={'name': 'twitter:image:src'}):
+        image = doc.find(attrs={'name': 'twitter:image:src'})['content']
+    else:
+        images = [dict(img.attrs)['src'] for img in doc.html.body.findAll('img')]
+        if images:
+            image = images[0]
+
+    return image

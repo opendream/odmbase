@@ -245,6 +245,8 @@ class AbstractAwesomeModel(AbstractCommonTrashModel, AbstractCachedModel):
 
 class CommonModel(AbstractAwesomeModel):
 
+    DEFAULT_STATUS = STATUS_PUBLISHED
+
     real_type = models.ForeignKey(ContentType, editable=False)
 
     common_created_by = models.ForeignKey('self', null=True, blank=True)

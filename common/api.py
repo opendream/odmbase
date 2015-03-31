@@ -4,23 +4,23 @@ import ast
 from django.conf import settings
 from django.conf.urls import url
 from django.core.exceptions import ValidationError, ObjectDoesNotExist
+from django.http import HttpResponse, JsonResponse
 from django.utils import six
 from django.utils.cache import patch_vary_headers, patch_cache_control
+from django.views.decorators.csrf import csrf_exempt
 from tastypie.authentication import ApiKeyAuthentication
 from tastypie.authorization import Authorization, ReadOnlyAuthorization
 from tastypie.bundle import Bundle
 from tastypie.exceptions import BadRequest, Unauthorized, ApiFieldError
 from tastypie.fields import ToManyField, NOT_PROVIDED
 from tastypie.http import HttpForbidden
-from tastypie.resources import ModelResource, csrf_exempt, sanitize, BaseModelResource, DeclarativeMetaclass, \
-    ModelDeclarativeMetaclass
+from tastypie.resources import Resource, csrf_exempt, sanitize, BaseModelResource, ModelDeclarativeMetaclass
 from tastypie.serializers import Serializer
 from tastypie import http
 from tastypie import fields
 from django.core.serializers import json as djangojson
 from tastypie.utils import trailing_slash
 from odmbase.api.fields import SorlThumbnailField
-from odmbase.common.constants import STATUS_PUBLISHED
 
 from odmbase.common.models import CommonModel, Image
 
@@ -178,6 +178,8 @@ class CommonModelDeclarativeMetaclass(ModelDeclarativeMetaclass):
 class CommonModelResource(six.with_metaclass(CommonModelDeclarativeMetaclass, BaseModelResource)):
 
     unicode_string = fields.CharField(attribute='unicode_string', readonly=True)
+    common_resource_uri = fields.ToOneField('odmbase.common.api.CommonResource', 'commonmodel_ptr', readonly=True, null=True)
+
 
     def build_schema(self):
         base_schema = super(CommonModelResource, self).build_schema()
@@ -192,6 +194,11 @@ class CommonModelResource(six.with_metaclass(CommonModelDeclarativeMetaclass, Ba
 
         bundle = super(CommonModelResource, self).dehydrate(bundle)
 
+        #if bundle.data.get('common_ptr'):
+        #    bundle.data['common_resource_uri'] = bundle.data['common_ptr']
+        #else:
+        #    bundle.data['common_resource_uri'] = self.get_resource_uri(bundle)
+#
         # Handle permission field abit
         bundle.data['can_edit'] = False
         if bundle.request.user and bundle.request.user.is_authenticated() and bundle.request.user.is_staff:
@@ -443,3 +450,23 @@ class BetterManyToManyField(ToManyField):
             m2m_dehydrated.append(self.dehydrate_related(m2m_bundle, m2m_resource, for_list=for_list))
 
         return m2m_dehydrated
+
+
+@csrf_exempt
+def scrap_website_meta(request):
+    if request.method == 'POST':
+        website_url = request.POST.get('website_url')
+        if not website_url:
+            return HttpResponse(json.dumps({
+                'error': 'website_url is required.'
+            }), content_type='application/json')
+
+        from odmbase.common.functions import scrap_website_meta
+        meta = scrap_website_meta(website_url)
+
+        return JsonResponse({
+            'meta': meta
+        })
+    else:
+        return HttpResponse(status=405)
+
