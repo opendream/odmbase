@@ -57,6 +57,9 @@ conf/settings.py
 		....
 	)
 
+	ENABLE_COMMENT = True
+    ENABLE_LIKE = True
+
 api/registers.py
 
 	from odmbase.comments.api import CommentResource
