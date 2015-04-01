@@ -43,3 +43,29 @@ account.models
 	class User(ODMUser):
 		.... your fields implement here ....
 
+
+### Add modules
+- comments
+- likes
+
+conf/settings.py
+
+	APPEND_INSTALLED_APPS = (
+		....
+		'odmbase.comments',
+		'odmbase.likes',
+		....
+	)
+
+api/registers.py
+
+	from odmbase.comments.api import CommentResource
+    from odmbase.likes.api import LikeResource
+
+    API_RESOURCES = (
+		....
+		CommentResource(),
+        LikeResource(),
+		....
+	)
+

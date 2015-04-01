@@ -1,3 +1,4 @@
+import hashlib
 import time
 import re
 from uuid import uuid1
@@ -13,6 +14,7 @@ from django.utils import timezone
 from django.utils.encoding import force_bytes
 from django.utils.http import urlsafe_base64_encode
 from django.utils.translation import ugettext_lazy as _
+from sorl.thumbnail import get_thumbnail
 from tastypie.models import create_api_key
 
 from odmbase.account.functions import rewrite_username
@@ -82,6 +84,13 @@ class AbstractPeopleField(models.Model):
 
         return self.get_full_name() or self.username
 
+    def get_image(self):
+
+        if self.image:
+            return get_thumbnail(self.image, '200x200')
+
+        email = self.email or ''
+        return 'http://www.gravatar.com/avatar/%s?d=mm' % hashlib.md5(email).hexdigest()
 
     def __unicode__(self):
         return self.get_display_name()
@@ -91,8 +100,11 @@ class AbstractPeopleField(models.Model):
 
 class User(AbstractPeopleField, CommonModel, AbstractBaseUser, PermissionsMixin):
 
+    URL_PATTERN = r'^(?P<username>\w+)$'
+
     STATUS_PUBLISHED = STATUS_PUBLISHED
     STATUS_PENDING = STATUS_PENDING
+    cached_vars = ['status', 'password']
 
     username = models.CharField(_('Username'), max_length=30, unique=True,
         help_text=_('Required 30 characters or fewer. Letters, numbers and @/./+/-/_ characters'),
@@ -143,11 +155,13 @@ class User(AbstractPeopleField, CommonModel, AbstractBaseUser, PermissionsMixin)
 
         password = self.password
         is_new = self.pk is None
+        is_same_password = self.password == self.var_cache['password']
+
 
         # WTF Django security
-
-        if self.password and not self.password.startswith('pbkdf2_sha256$'):
+        if self.password and not is_same_password and not self.password.startswith('pbkdf2_sha256$'):
             self.set_password(self.password)
+
         elif self.id and not self.password:
 
             from account.models import User as AccountUser
@@ -156,7 +170,7 @@ class User(AbstractPeopleField, CommonModel, AbstractBaseUser, PermissionsMixin)
             if user.password:
                 self.password = user.password
 
-        elif is_new:
+        elif is_new and not is_same_password:
             self.set_password(str(uuid1())[0: 10].replace('-', ''))
 
 
@@ -206,6 +220,11 @@ class User(AbstractPeopleField, CommonModel, AbstractBaseUser, PermissionsMixin)
             output = self.username
 
         return output
+
+
+    def get_absolute_url(self):
+        return self.username
+
 
     def user_can_edit(self, user):
         return self == user

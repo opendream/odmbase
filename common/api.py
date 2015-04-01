@@ -14,7 +14,8 @@ from tastypie.bundle import Bundle
 from tastypie.exceptions import BadRequest, Unauthorized, ApiFieldError
 from tastypie.fields import ToManyField, NOT_PROVIDED
 from tastypie.http import HttpForbidden
-from tastypie.resources import Resource, csrf_exempt, sanitize, BaseModelResource, ModelDeclarativeMetaclass
+from tastypie.resources import Resource, csrf_exempt, sanitize, BaseModelResource, ModelDeclarativeMetaclass, \
+    ModelResource
 from tastypie.serializers import Serializer
 from tastypie import http
 from tastypie import fields
@@ -177,6 +178,7 @@ class CommonModelDeclarativeMetaclass(ModelDeclarativeMetaclass):
 
 class CommonModelResource(six.with_metaclass(CommonModelDeclarativeMetaclass, BaseModelResource)):
 
+    inst_name = fields.CharField(attribute='inst_name', readonly=True, null=True, blank=True)
     unicode_string = fields.CharField(attribute='unicode_string', readonly=True)
     common_resource_uri = fields.ToOneField('odmbase.common.api.CommonResource', 'commonmodel_ptr', readonly=True, null=True)
 
@@ -313,6 +315,76 @@ class CommonModelResource(six.with_metaclass(CommonModelDeclarativeMetaclass, Ba
 
         return wrapper
 
+    def save_m2m(self, bundle):
+        """
+        Handles the saving of related M2M data.
+
+        Due to the way Django works, the M2M data must be handled after the
+        main instance, which is why this isn't a part of the main ``save`` bits.
+
+        Currently slightly inefficient in that it will clear out the whole
+        relation and recreate the related data as needed.
+        """
+        for field_name, field_object in self.fields.items():
+            if not getattr(field_object, 'is_m2m', False):
+                continue
+
+            if not field_object.attribute:
+                continue
+
+            if field_object.readonly:
+                continue
+
+            # For better
+            if field_object.null and bundle.data[field_name] is None:
+                continue
+
+            # Get the manager.
+            related_mngr = None
+
+            if isinstance(field_object.attribute, six.string_types):
+                related_mngr = getattr(bundle.obj, field_object.attribute)
+            elif callable(field_object.attribute):
+                related_mngr = field_object.attribute(bundle)
+
+            if not related_mngr:
+                continue
+
+            if hasattr(related_mngr, 'clear'):
+                # FIXME: Dupe the original bundle, copy in the new object &
+                # check the perms on that (using the related resource)?
+
+                # Clear it out, just to be safe.
+                related_mngr.clear()
+
+            related_objs = []
+
+            for related_bundle in bundle.data[field_name]:
+                related_resource = field_object.get_related_resource(bundle.obj)
+
+                # Before we build the bundle & try saving it, let's make sure we
+                # haven't already saved it.
+                obj_id = self.create_identifier(related_bundle.obj)
+
+                if obj_id in bundle.objects_saved:
+                    # It's already been saved. We're done here.
+                    continue
+
+                # Only build & save if there's data, not just a URI.
+                updated_related_bundle = related_resource.build_bundle(
+                    obj=related_bundle.obj,
+                    data=related_bundle.data,
+                    request=bundle.request,
+                    objects_saved=bundle.objects_saved
+                )
+
+                # Only save related models if they're newly added.
+                if updated_related_bundle.obj._state.adding:
+                    related_resource.save(updated_related_bundle)
+                related_objs.append(updated_related_bundle.obj)
+
+            related_mngr.add(*related_objs)
+
 class CommonResource(CommonModelResource):
 
     class Meta:
@@ -375,6 +447,25 @@ class ImageResource(CommonModelResource):
         resource_name = 'image'
         authentication = CommonApiKeyAuthentication()
 
+
+# Don't move na ja
+class LikeAttachResource(ModelResource):
+    likes_count = fields.IntegerField(attribute='likes_count', null=True, readonly=True)
+
+    def dehydrate(self, bundle):
+
+        from odmbase.likes.models import Like
+        bundle = super(LikeAttachResource, self).dehydrate(bundle)
+
+        bundle.data['is_liked'] = False
+        if bundle.request.user and bundle.request.user.is_authenticated():
+            try:
+                Like.objects.get(src=bundle.request.user, dst=bundle.obj)
+                bundle.data['is_liked'] = True
+            except Like.DoesNotExist:
+                pass
+
+        return bundle
 
 
 class BetterManyToManyField(ToManyField):
@@ -451,9 +542,42 @@ class BetterManyToManyField(ToManyField):
 
         return m2m_dehydrated
 
+    def hydrate_m2m(self, bundle):
+        if self.readonly:
+            return None
+
+        if bundle.data.get(self.instance_name) is None:
+            if self.blank:
+                return []
+            elif self.null:
+                return None
+            else:
+                raise ApiFieldError("The '%s' field has no data and doesn't allow a null value." % self.instance_name)
+
+        m2m_hydrated = []
+
+        for value in bundle.data.get(self.instance_name):
+            if value is None:
+                continue
+
+            kwargs = {
+                'request': bundle.request,
+            }
+
+            if self.related_name:
+                kwargs['related_obj'] = bundle.obj
+                kwargs['related_name'] = self.related_name
+
+            m2m_hydrated.append(self.build_related_resource(value, **kwargs))
+
+        return m2m_hydrated
 
 @csrf_exempt
 def scrap_website_meta(request):
+    # CHECK USER IS AUTHENTICATED
+    if CommonApiKeyAuthentication().is_authenticated(request).status_code == 401:
+        return HttpResponse(status=401)
+
     if request.method == 'POST':
         website_url = request.POST.get('website_url')
         if not website_url:
