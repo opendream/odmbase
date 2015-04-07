@@ -1,0 +1,13 @@
+{% load i18n %}{% autoescape off %}
+
+คุณได้รับอีเมลนี้เพราะว่า คุณ {{ instance.created_by.unicode_string }} ให้เครดิตคุณและเชิญคุณเข้าร่วมแบ่งปันกับเว็บไซต์ {{ site_name }}
+
+{{ instance.message }}
+
+คุณสามารถใช้สิทธิ์โดยการกดที่ลิงก์ด้านล่าง
+{{ protocol }}://{{ domain }}/invite/{{ instance.code }}
+
+หรือเก็บโคดด้านล่างนี้ไว้ใช้ตอนโพสต์ของ
+<h1>{{ instance.code }}</h1>
+
+{% endautoescape %}
