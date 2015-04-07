@@ -194,7 +194,7 @@ class AbstractCachedModel(models.Model):
                 self.var_cache[var] = None
 
 
-class AbstractPermalink(AbstractCommonModel):
+class AbstractPermalink(models.Model):
 
     permalink = models.CharField(max_length=255, unique=True,
         help_text=_('Required unique 30 characters or fewer. Letters, numbers and ./@/+/-/_ characters'),
