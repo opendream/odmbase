@@ -18,7 +18,9 @@ def helper(request):
         'GOOGLE_ANALYTICS_KEY': settings.GOOGLE_ANALYTICS_KEY,
         'SITE_URL': settings.SITE_URL,
         'NG_APP': settings.NG_APP,
-        'DEBUG': int(settings.DEBUG)
+        'DEBUG': int(settings.DEBUG),
+        'ENABLE_COMMENT': settings.ENABLE_COMMENT,
+        'ENABLE_LIKE': settings.ENABLE_LIKE,
     }
 
     return context

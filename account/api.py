@@ -16,6 +16,7 @@ from tastypie.utils import trailing_slash
 from django.contrib.auth import get_user_model
 
 from social_auth.backends.facebook import BACKENDS
+from odmbase.api.fields import SorlThumbnailField
 
 from odmbase.common.api import ImageAttachResource, CommonResource, CommonAnonymousPostApiKeyAuthentication, \
     VerboseSerializer, CommonModelResource, CommonAuthorization, CommonAnonymousPostAuthorization
@@ -38,6 +39,8 @@ class UserResource(ImageAttachResource, CommonModelResource):
     get_full_name = fields.CharField(attribute='get_full_name', null=True, readonly=True)
     get_short_name = fields.CharField(attribute='get_short_name', null=True, readonly=True)
 
+    get_image = fields.FileField(attribute='get_image', readonly=True)
+
     class Meta:
         queryset = User.objects.all()
         resource_name = 'user'
@@ -45,6 +48,7 @@ class UserResource(ImageAttachResource, CommonModelResource):
         authentication = CommonAnonymousPostApiKeyAuthentication()
         always_return_data = True
         detail_uri_name = 'username'
+        include_absolute_url = True
         #excludes = ['password']
         filtering = {
             'username': ALL,
@@ -202,6 +206,7 @@ class UserReferenceResource(UserResource):
         authentication = Authentication()
         serializer = VerboseSerializer(formats=['json'])
         #TODO: remove email field when upload image complete
+        include_absolute_url = True
 
         fields = ['id', 'unicode_string', 'username',
                   'image', 'image_thumbnail_1x', 'image_thumbnail_2x', 'image_thumbnail_3x']

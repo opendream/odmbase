@@ -131,7 +131,8 @@ def instance_save_image_from_url(instance, image_url, field_name='image', rand=F
 
 def scrap_website_meta(url):
     raw = urllib2.urlopen(url, timeout=10)
-    html = raw.read()
+    charset = raw.headers.getparam('charset') or 'utf-8'
+    html = raw.read().decode(charset)
     doc = BeautifulSoup(html)
 
     return {

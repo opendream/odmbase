@@ -191,6 +191,10 @@ RESERVED_USERNAMES = [
 # API
 TASTYPIE_DEFAULT_FORMATS = ['json']
 
+# MODULE ENABLE
+ENABLE_COMMENT = False
+ENABLE_LIKE = False
+
 
 # CUSTOM PROJECT #############################
 
