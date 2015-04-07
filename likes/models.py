@@ -1,13 +1,18 @@
+import pytz
 
 from django.conf import settings
 from django.db import models
-from django.db.models.signals import post_delete, post_save
-from django.dispatch import receiver
-
+from django.utils.timezone import make_naive
 from django.utils.translation import ugettext_lazy as _
+
 
 from odmbase.common.models import CommonModel
 
+HAS_FEED_INTEGRATION = True
+try:
+    from notification_feeds.feed_managers import manager
+except:
+    HAS_FEED_INTEGRATION = False
 
 class Like(CommonModel):
     CREATED_BY_FIELD = 'src'
@@ -21,6 +26,7 @@ class Like(CommonModel):
         return '%s liked: "%s"' % (self.src.get_full_name(), self.message)
 
     def save(self, commit=True, *args, **kwargs):
+        is_new = self.pk is None
         if not self.pk:
             try:
                 self.pk = Like.objects.get(src=self.src, dst=self.dst).pk
@@ -28,21 +34,46 @@ class Like(CommonModel):
                 pass
         super(Like, self).save(*args, **kwargs)
 
+        instance = self.dst.cast()
+
+        # Update likes count
+        if hasattr(instance, 'likes_count'):
+            likes_count = Like.objects.filter(dst=instance.commonmodel_ptr).count()
+            instance.likes_count = likes_count
+            instance.save()
+
+
+        # add to redis feed
+        if HAS_FEED_INTEGRATION:
+
+            is_created_by = self.src.id == self.dst.common_created_by.id
+
+            if is_new and not is_created_by:
+                manager.add_item(self)
+
+    def delete(self, using=None):
+        super(Like, self).delete(using)
+
+        # REMOVE FROM REDIS
+        if HAS_FEED_INTEGRATION:
+            manager.remove_item(self)
+
     @property
     def get_dst(self):
         return self.dst and self.dst.cast()
-        
 
-@receiver([post_save, post_delete], sender=Like)
-def update_likes_count(sender, instance, **kwargs):
-    if kwargs.get('signal') == post_delete or kwargs.get('created') or instance.is_deleted:
-        goal = instance.dst.cast()
-        try:
-            likes_count = goal.likes_count
-            likes_count = Like.objects.filter(dst=goal.commonmodel_ptr).count()
-            goal.likes_count = likes_count
-        except:
-            pass
-        else:
-            goal.save()
+    def create_activity(self, item_id=None, method=None, extra_context=None):
 
+        from notification_feeds.activities import Activity
+        from notification_feeds.verbs import LikeVerb
+
+        extra_context = extra_context or {}
+        activity = Activity(
+            actor = self.src.id,
+            verb = LikeVerb,
+            object = self.id,
+            target = self.get_dst.id,
+            time = make_naive(self.created, pytz.utc),
+            extra_context = extra_context
+        )
+        return activity

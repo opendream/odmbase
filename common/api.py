@@ -575,7 +575,7 @@ class BetterManyToManyField(ToManyField):
 @csrf_exempt
 def scrap_website_meta(request):
     # CHECK USER IS AUTHENTICATED
-    if CommonApiKeyAuthentication().is_authenticated(request).status_code == 401:
+    if CommonApiKeyAuthentication().is_authenticated(request) != True:
         return HttpResponse(status=401)
 
     if request.method == 'POST':

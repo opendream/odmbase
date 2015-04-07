@@ -18,7 +18,7 @@ class LikeResource(CommonModelResource, AutoAssignCreatedByMixinResource):
     CREATED_BY_FIELD = 'src'
     created_by = fields.ForeignKey(UserReferenceResource, CREATED_BY_FIELD, use_in='detail') #delete parent field
     src = fields.ForeignKey(UserReferenceResource, CREATED_BY_FIELD, full=True, readonly=True)
-    dst = fields.ForeignKey(CommonResource, 'dst', full=True)
+    dst = fields.ForeignKey(CommonResource, 'dst')
 
     get_dst = GenericForeignKeyField({
         CommonModel: CommonModelResource,
@@ -26,7 +26,7 @@ class LikeResource(CommonModelResource, AutoAssignCreatedByMixinResource):
         TeamGoal: TeamGoalResource,
         Update: UpdateResource
         # Inspiration: InspirationResource # IN THE FUTURE
-    }, 'get_dst', readonly=True)
+    }, 'get_dst', readonly=True, full=True)
 
     class Meta:
         queryset = Like.objects.all()

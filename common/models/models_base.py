@@ -43,6 +43,9 @@ class CommonTrashManager(models.Manager):
     def annotate(self, *args, **kwargs):
         return super(CommonTrashManager, self).exclude(is_deleted=True).annotate(*args, **kwargs)
 
+    def count(self, *args, **kwargs):
+        return self.filter(*args, **kwargs).count()
+
 
 class AbstractCommonModel(models.Model):
 

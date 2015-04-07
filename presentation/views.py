@@ -21,7 +21,11 @@ def home(request):
             match = regex.search(request.path[1:])
 
             if match:
-                model = Model.objects.get(**match.groupdict())
+                # TODO: Check reserve urls
+                try:
+                    model = Model.objects.get(**match.groupdict())
+                except Model.DoesNotExist:
+                    model = None
 
                 meta = render_to_string('meta.html', {
                     'site_name': settings.SITE_NAME,
