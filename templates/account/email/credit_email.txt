@@ -1,0 +1,328 @@
+{% load i18n %}{% autoescape off %}
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta content="text/html; charset=utf-8" http-equiv="Content-Type">
+    <meta content="width=device-width" name="viewport">
+    <style>
+      /**********************************************
+      * Ink v1.0.5 - Copyright 2013 ZURB Inc        *
+      **********************************************/
+
+      /* Client-specific Styles & Reset */
+
+      body {
+				width:100% !important;
+        min-width: 100%;
+        -webkit-text-size-adjust:100%;
+        -ms-text-size-adjust:100%;
+        margin:0;
+        padding:0;
+      }
+
+      img {
+        outline:none;
+        text-decoration:none;
+        -ms-interpolation-mode: bicubic;
+        width: auto;
+        max-width: 100%;
+        float: left;
+        clear: both;
+        display: block;
+      }
+
+      center {
+        width: 100%;
+        min-width: 580px;
+      }
+
+      a img { border: none;}
+
+      p { margin: 0 0 0 10px;}
+
+      table {
+        border-spacing: 0;
+        border-collapse: collapse;
+      }
+
+      td {
+        word-break: break-word;
+        -webkit-hyphens: auto;
+        -moz-hyphens: auto;
+        hyphens: auto;
+        border-collapse: collapse !important;
+      }
+
+      table, tr, td {
+        padding: 0;
+        vertical-align: top;
+        text-align: left;
+      }
+
+      hr {
+        color: #d9d9d9;
+        background-color: #d9d9d9;
+        height: 1px;
+        border: none;
+      }
+
+      /* Responsive Grid */
+      table.body {
+        height: 100%;
+        width: 100%;
+      }
+
+      table.container {
+        width: 580px;
+        margin: 0 auto;
+        text-align: inherit;
+      }
+
+      table.row {
+        padding: 0;
+        width: 100%;
+        position: relative;
+      }
+
+      table.container table.row {
+        display: block;
+      }
+
+      td.wrapper {
+        padding: 10px 20px 0px 0px;
+        position: relative;
+      }
+
+      table.columns,
+      table.column {
+        margin: 0 auto;
+      }
+
+      table.columns td,
+      table.column td {
+        padding: 0 0 10px;
+
+      }
+
+      /* Alignment & Visibility Classes */
+
+      table.center, td.center {
+        text-align: center;
+      }
+
+      h1.center,
+      h2.center,
+      h3.center,
+      h4.center,
+      h5.center,
+      h6.center {
+        text-align: center;
+      }
+
+      span.center {
+        display: block;
+        width: 100%;
+        text-align: center;
+      }
+
+      img.center {
+        margin: 0 auto;
+        float: none;
+      }
+
+      .show-for-small,
+      .hide-for-desktop {
+        display: none;
+      }
+
+      /* Typography */
+
+      body, table.body, h1, h2, h3, h4, h5, h6, p, td {
+        color: #222222;
+        font-family: "Helvetica", "Arial", sans-serif;
+        font-weight: normal;
+        padding:0;
+        margin: 0;
+        text-align: left;
+        line-height: 1.3;
+      }
+
+      h1, h2, h3, h4, h5, h6 {
+        word-break: normal;
+      }
+
+      h1 {
+        font-size: 40px;
+      }
+      h2 {
+        font-size: 36px;
+      }
+      h3 {
+        font-size: 32px;
+      }
+      h4 {
+        font-size: 28px;
+      }
+      h5 {
+        font-size: 24px;
+      }
+      h6 {
+        font-size: 20px;
+      }
+      body, table.body, p, td {
+        font-size: 14px;
+        line-height:19px;
+      }
+
+      p.lead, p.lede, p.leed {
+        font-size: 18px;
+        line-height:21px;
+      }
+
+      p {
+        margin-bottom: 10px;
+      }
+
+      small {
+        font-size: 10px;
+      }
+
+      a {
+        color: #2ba6cb;
+        text-decoration: none;
+      }
+
+      a:hover {
+        color: #2795b6 !important;
+      }
+
+      a:active {
+        color: #2795b6 !important;
+      }
+
+      a:visited {
+        color: #2ba6cb !important;
+      }
+
+      /* Outlook First */
+      body.outlook p {
+        display: inline !important;
+      }
+
+      /*  Media Queries */
+
+      @media only screen and (max-width: 600px) {
+
+        table[class="body"] .container {
+          width: 95% !important;
+        }
+
+        table[class="body"] .row {
+          width: 100% !important;
+          display: block !important;
+        }
+
+        table[class="body"] .wrapper {
+          display: block !important;
+          padding-right: 0 !important;
+        }
+
+        table[class="body"] .columns,
+        table[class="body"] .column {
+          table-layout: fixed !important;
+          float: none !important;
+          width: 100% !important;
+          padding-right: 0px !important;
+          padding-left: 0px !important;
+          display: block !important;
+        }
+
+        table[class="body"] table.columns td,
+        table[class="body"] table.column td {
+          width: 100% !important;
+        }
+      }
+
+      table.container {
+        border: 5px solid #c9c643;
+      }
+
+      table.row > tbody > tr > td {
+        padding: 0 30px 105px;
+      }
+
+      table.footer {
+        background-color: #c9c643;
+      }
+      table.footer > tbody > tr > td { padding: 10px;}
+      .footer .wrapper {
+        background-color: #c9c643;
+      }
+      @media only screen and (max-width: 600px) {
+        table.row > tbody > tr > td {
+          padding: 0.5em 1em;
+        }
+      }
+    </style>
+
+    <title>
+    	ชวนเพื่อน
+    </title>
+  </head>
+
+  <body>
+    <table class="body">
+      <tr>
+        <td align="center" class="center" valign="top">
+          <table class="container">
+            <tr>
+              <td>
+                <table class="row">
+                  <tr>
+                    <td style="padding-bottom: 30px;">
+                      <table>
+                        <tr>
+                          <td style="padding: 30px 0;">
+                            <img src="{{ protocol }}://{{ domain }}/static/images/logo-punjai.png" style="width: 120px;"/>
+                          </td>
+                        </tr>
+                      </table>
+                      <table>
+                        <tr>
+                          <td style="width: 80px;">
+                            <img src="https://fbcdn-sphotos-c-a.akamaihd.net/hphotos-ak-xaf1/v/t1.0-9/19794_753296174791500_8960326888899097161_n.jpg?oh=4b9a0420b25acb55d85cb2b286057586&oe=55A575C6&__gda__=1436183705_07c366d3669616823c8b243825ceef56" style="width: 80px; border:0;border-radius:50%"/>
+                          </td>
+                          <td style="padding-left: 20px;">
+                            <p class="lead">สวัสดี คุณโตโต้</p>
+                            <p>ฉันอยากจะแบ่งปันเรื่องดีๆให้กับคุณ จากเว็บไซต์ปันใจ “ปันของที่ไม่ได้ใช้ ให้กับคนที่มีใจอยากได้” โดยรายได้ส่วนหนึ่งจากการปัน จะนำไปบริจาคให้กับโครงการต่างๆ</p>
+                            <p>{{ instance.message }}</p>
+                            <p>เพียงคุณนำ CODE ข้างล่างนี้ ไปแลกเป็นคะแนน(Points) ก็จะทำให้คุณ สามารถร่วมแบ่งปันสิ่งของกับเราได้ค่ะ</p>
+                            <br />
+                            <p class="code" style="background-color: #E0ADB4;color: #fff !important;font-weight: 100;font-size: 18px;padding: 10px;letter-spacing: 1px; padding: 10px; text-align: center;">{{ instance.code }}</p>
+                            <br />
+							  <a href="{{ protocol }}://{{ domain }}/invite/{{ instance.code }}" style="background-color: #D5D25D;color: #5E3C31 !important;font-weight: 100;font-size: 14px;padding: 10px 20px; display: inline-block !important;">
+                              ร่วมแบ่งปันกับเรา
+                            </a>
+                          </td>
+                        </tr>
+                      </table>
+                    </td>
+                  </tr>
+                </table>
+
+                <table class="row footer">
+                  <tr>
+                    <td style="width: 580px;">
+                      <img src="{{ protocol }}://{{ domain }}/static/images/punjai-footer.png" style="width: 180px; float: right;"/>
+                    </td>
+                  </tr>
+                </table>
+              </td>
+            </tr>
+          </table>
+        </td>
+      </tr>
+    </table>
+  </body>
+</html>
+{% endautoescape %}

@@ -53,6 +53,7 @@ class UserResource(ImageAttachResource, CommonModelResource):
         filtering = {
             'username': ALL,
             'id': ALL,
+            'email': ALL
         }
 
     def prepend_urls(self):

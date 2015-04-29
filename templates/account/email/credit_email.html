@@ -1,13 +1,75 @@
 {% load i18n %}{% autoescape off %}
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta content="text/html; charset=utf-8" http-equiv="Content-Type">
+    <meta content="width=device-width" name="viewport">
+    <title>
+    	ชวนเพื่อน
+    </title>
+  </head>
 
-คุณได้รับอีเมลนี้เพราะว่า คุณ {{ instance.created_by.unicode_string }} ให้เครดิตคุณและเชิญคุณเข้าร่วมแบ่งปันกับเว็บไซต์ {{ site_name }}
+  <body>
+    <p style="font-size: 16px; text-align:left; font-weight: bold; color: #5f3c30;">สวัสดีค่ะ <br />
+    คุณ {{ instance.created_by.unicode_string }} ได้ส่งเครดิตปันใจมาให้คุณค่ะ</p>
+<!--   <p style="font-size: 16px; text-align:left; font-weight: bold; color: #5f3c30;">สวัสดีค่ะ คุณ Pui, เพื่อนของคุณได้ส่งเครดิตปันใจมาให้</p> -->
+    <table cellpadding="0" style="border: 4px solid #f2f2f2; border-spacing: 0; width: 640px;">
+      <!-- Start Logo row -->
+      <tr>
+        <td align="left" valign="top" style="padding:30px 10px;border-bottom: 2px solid #f2f2f2;">
+          <img src="{{ protocol }}://{{ domain }}/static/images/logo-punjai.png" style="width: 120px;" alt="Punjai Logo"/>
+<!--           <img src="https://ci3.googleusercontent.com/proxy/v8Rlo7bvu5c9Qe8PDLgGHw5mZIGvI0Z9Nozwh4m2N6R_FzdHySlzk8hyavcWp1s4alh37rJJzpMHxoDkJI_ctxEgKgMS=s0-d-e1-ft#http://punjai.com/static/images/logo-punjai.png" style="width: 120px;"/> -->
+        </td> 
+      </tr>
+      <!-- End Logo row -->
 
-{{ instance.message }}
+      <!-- Start email body -->
+      <tr>
+        <td style="padding: 25px 0 50px; ">
+          <table cellpadding="0" style="border-spacing: 0;">
+            <tr>
+              <td style="width: 75px; vertical-align: top; padding: 10px 0px 10px 20px;">
+                 <img src="{{ protocol }}://{{ domain }}/media/{{ instance.created_by.get_image }}" style="width: 55px; border:0;border-radius:50%" alt="Sender avatar" />
+              </td> 
+              <td style="padding: 0 25px 50px 15px; font-size: 15px;">
+                <p style="color: #5f3c30;">{{ instance.message }}</p>
+                <!-- <p style="color: #5f3c30;">"ข้อความตัวอย่างที่ส่งมาชวนเพื่อนด้วยตนเอง .. มาปันของกันนะ : )"</p> -->
+                
+                <p style="color: #5f3c30; padding-top: 40px;"><span style="color: #b6bd00;">"ปันของที่ไม่ได้ใช้ ให้กับคนที่มีใจอยากได้"</span>
+                  โดยรายได้ส่วนหนึ่งจากการปันจะนำไปบริจาคให้กับโครงการช่วยเหลือสังคม
+                </p>
+                
+                <p style="color: #5f3c30;">เพียงคุณนำรหัส <strong>"ปันใจเครดิต" </strong>ข้างล่างนี้ไปกรอก หรือคลิก <strong>"ร่วมแบ่งปันกับเรา"</strong> ก็จะทำให้คุณ สามารถร่วมแบ่งปันกับเราได้ค่ะ</p>
+                <br />
+                <p class="code" style="background-color: #E0ADB4;color: #fff !important;font-weight: 100;font-size: 18px;padding: 10px;letter-spacing: 1px; padding: 10px; text-align: center; width: 500px;" >{{ instance.code }}</p>
+  <!--               <p class="code" style="background-color: #E0ADB4;color: #fff !important;font-weight: 100;font-size: 18px;padding: 10px;letter-spacing: 1px; padding: 10px; text-align: center; width: 500px;" >ASD4567g</p> -->
+                <br />
+                <a href="{{ protocol }}://{{ domain }}/invite/{{ instance.code }}" style="background-color: #D5D25D;color: #5E3C31 !important;font-weight: 100;font-size: 14px;padding: 10px 20px; display: inline-block !important; text-decoration: none; cursor: pointer;" title="ร่วมแบ่งปันกับเรา" alt="ร่วมแบ่งปันกับเรา">
+                  ร่วมแบ่งปันกับเรา
+                </a>
+              </td>
+            </tr>
+          </table>
+        </td>
+      </tr>
+      <!-- End email body -->
 
-คุณสามารถใช้สิทธิ์โดยการกดที่ลิงก์ด้านล่าง
-{{ protocol }}://{{ domain }}/invite/{{ instance.code }}
+      <tr>
+        <td>
+          <table cellpadding="0" style="width: 100%; border-spacing: 0;">
+            <tr>
+              <td style="width: 700px; background-color: #f2f2f2; padding: 15px;">
+                <img src="{{ protocol }}://{{ domain }}/static/images/punjai-footer.png" style="width: 180px; float: right;" alt="ปันของที่ไม่ได้ใช้ ให้กับคนที่มีใจอยากได้" title="ปันของที่ไม่ได้ใช้ ให้กับคนที่มีใจอยากได้"/>
+<!--                 <img src="https://ci4.googleusercontent.com/proxy/PV-z383BSR2hJMnaxAO1BirsWkqa4--8_sCOgqdEv0OqJe5AwuwpjDttXye0ICOzL-IPFl45MMZqqf4xBiU0JH1imxRgRBE=s0-d-e1-ft#http://punjai.com/static/images/punjai-footer.png" style="width: 180px; float: right;" /> -->
+              </td>
+            </tr>
+          </table>
+        </td>
+      </tr>
+    </table>
 
-หรือเก็บโคดด้านล่างนี้ไว้ใช้ตอนโพสต์ของ
-<h1>{{ instance.code }}</h1>
 
+    
+  </body>
+</html>
 {% endautoescape %}
