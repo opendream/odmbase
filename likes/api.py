@@ -3,8 +3,8 @@ from tastypie import fields
 from tastypie.constants import ALL_WITH_RELATIONS, ALL
 from tastypie.contrib.contenttypes.fields import GenericForeignKeyField
 
-from goals.api import GoalResource, TeamGoalResource
-from goals.models import Goal, TeamGoal
+from goals.api import CommonGoalResource
+from goals.models import CommonGoal
 from odmbase.account.api import AutoAssignCreatedByMixinResource, UserReferenceResource
 from odmbase.common.api import CommonModelResource, CommonApiKeyAuthentication, CommonResource
 from odmbase.common.models import CommonModel
@@ -22,8 +22,7 @@ class LikeResource(CommonModelResource, AutoAssignCreatedByMixinResource):
 
     get_dst = GenericForeignKeyField({
         CommonModel: CommonModelResource,
-        Goal: GoalResource,
-        TeamGoal: TeamGoalResource,
+        CommonGoal: CommonGoalResource,
         Update: UpdateResource
         # Inspiration: InspirationResource # IN THE FUTURE
     }, 'get_dst', readonly=True, full=True)
@@ -32,6 +31,7 @@ class LikeResource(CommonModelResource, AutoAssignCreatedByMixinResource):
         queryset = Like.objects.all()
         resource_name = 'like'
         authentication = CommonApiKeyAuthentication()
+        limit = 2
         filtering = {
             'dst': ALL_WITH_RELATIONS,
             'id': ALL

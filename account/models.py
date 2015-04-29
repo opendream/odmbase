@@ -106,7 +106,7 @@ class User(AbstractPeopleField, CommonModel, AbstractBaseUser, PermissionsMixin)
     STATUS_PENDING = STATUS_PENDING
     cached_vars = ['status', 'password']
 
-    username = models.CharField(_('Username'), max_length=30, unique=True,
+    username = models.CharField(_('Username'), max_length=255, unique=True,
         help_text=_('Required 30 characters or fewer. Letters, numbers and @/./+/-/_ characters'),
         validators=[
             validators.RegexValidator(re.compile('^[\w.@+-]+$'), _('Enter a valid username.'), 'invalid')
@@ -276,3 +276,4 @@ class User(AbstractPeopleField, CommonModel, AbstractBaseUser, PermissionsMixin)
             else:
                 html_email = None
             send_mail(subject, email, from_email, [user.email], html_message=html_email)
+

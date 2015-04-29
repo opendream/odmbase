@@ -2,6 +2,7 @@
 
 import copy
 from uuid import uuid1
+from ckeditor.fields import RichTextField
 from django.conf import settings
 from django.contrib.contenttypes.models import ContentType
 from django.core import validators
@@ -10,7 +11,6 @@ from django.utils import timezone
 from django.utils.html import strip_tags
 from django.utils.translation import ugettext_lazy as _
 import bleach
-
 import re
 from odmbase.common.constants import STATUS_CHOICES, STATUS_PUBLISHED
 
@@ -56,7 +56,7 @@ class AbstractCommonModel(models.Model):
 
     def save(self, commit=True, force_insert=False, force_update=False, *args, **kwargs):
 
-        self.full_clean()
+        #self.full_clean()
 
         ALLOWED_TAGS = [
             'p', 'em', 'strong', 'span', 'a', 'br', 'strong', 'ul', 'ol', 'li', 'img',
@@ -72,12 +72,13 @@ class AbstractCommonModel(models.Model):
         }
 
         for field in self._meta.fields:
-            if type(field) in [models.fields.TextField]:
+            if type(field) in [RichTextField]:
                 value = bleach.clean(getattr(self, field.name), tags=ALLOWED_TAGS, attributes=ALLOWED_ATTRIBUTES)
                 setattr(self, field.name, value)
-            elif type(field) in [models.fields.CharField]:
-                value = bleach.clean(getattr(self, field.name))
-                setattr(self, field.name, value)
+            elif type(field) in [models.fields.CharField, models.fields.TextField]:
+                #value = bleach.clean(getattr(self, field.name))
+                #setattr(self, field.name, value)
+                pass
 
         super(AbstractCommonModel, self).save(*args, **kwargs)
 
@@ -156,7 +157,8 @@ class AbstractCommonTrashModel(AbstractCommonModel):
             self.permalink = 'deleted_%s_%s' % (deleted_uuid, self.permalink)
         # Common for delete user
         if hasattr(self, 'username'):
-            self.email = 'deleted_%s_%s' % (deleted_uuid, self.username)
+            self.username = 'deleted_%s_%s' % (deleted_uuid, self.username)
+            self.username = self.username[0: 29]
         if hasattr(self, 'email'):
             self.email = 'deleted_%s_%s' % (deleted_uuid, self.email)
 

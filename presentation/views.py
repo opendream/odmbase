@@ -1,12 +1,18 @@
 import re
 from django.conf import settings
+from django.http import HttpResponse
 from django.shortcuts import render
 from django.db import models
 from django.template.loader import render_to_string
 
+import urllib2
+import urllib
+from bs4 import BeautifulSoup
+
 # =============================
 # Home
 # =============================
+import requests
 
 
 def home(request):
@@ -44,3 +50,10 @@ def home(request):
 def handler403(request):
     return render(request, '403.html')
 
+def social_count_gplus(request):
+    url = request.GET['url']
+    r = requests.get('https://plusone.google.com/_/+1/fastbutton', params={'url': url}, headers={'Content-Type': 'application/x-www-form-urlencoded;charset=utf-8'})
+    html = r.text
+    doc = BeautifulSoup(html)
+    count = doc.find(id='aggregateCount')
+    return HttpResponse(count)

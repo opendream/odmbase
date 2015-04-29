@@ -134,15 +134,20 @@ def scrap_website_meta(url):
         raw = urllib2.urlopen(url, timeout=10)
     except:
         return {}
+
     charset = raw.headers.getparam('charset') or 'utf-8'
-    html = raw.read().decode(charset)
+    html = raw.read()
+    try:
+        html = html.decode(charset)
+    except:
+        pass
     doc = BeautifulSoup(html)
 
     return {
         'url': url,
         'title': _scrap_title(doc),
         'description': _scrap_description(doc),
-        'image': _scrap_image(doc),
+        'image': _scrap_image(doc, raw.geturl()),
     }
 
 def _scrap_title(doc):
@@ -164,15 +169,29 @@ def _scrap_description(doc):
         description = doc.find(attrs={'name': 'description'})['content']
     return description or ''
 
-def _scrap_image(doc):
+def _scrap_image(doc, url):
     image = ''
     if doc.find(property='og:image'):
         image = doc.find(property='og:image')['content']
     elif doc.find(attrs={'name': 'twitter:image:src'}):
         image = doc.find(attrs={'name': 'twitter:image:src'})['content']
+    elif doc.find(itemprop='image'):
+        image = doc.find(itemprop='image')['content']
     else:
-        images = [dict(img.attrs)['src'] for img in doc.html.body.findAll('img')]
+        images = doc.html.body.findAll('img')
         if images:
-            image = images[0]
+            attrs = dict(images[0].attrs)
+            if 'ng-src' in attrs:
+                image = attrs['ng-src']
+            else:
+                image = attrs['src']
+
+    if image and ( not image.startswith('http') and not image.startswith('ftp') ):
+        url_splitted = url.split('/', 3)
+        url_origin = '/'.join(x for x in url_splitted[:-1] )
+        if image.startswith('/'):
+            image = url_origin + image
+        else:
+            image = url_origin + '/' + image
 
     return image

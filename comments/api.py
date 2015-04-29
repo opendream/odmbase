@@ -3,8 +3,8 @@ from tastypie.constants import ALL_WITH_RELATIONS, ALL
 from tastypie.contrib.contenttypes.fields import GenericForeignKeyField
 
 from .models import Comment
-from goals.api import GoalResource, TeamGoalResource
-from goals.models import Goal, TeamGoal
+from goals.api import CommonGoalResource
+from goals.models import CommonGoal
 from odmbase.account.api import AutoAssignCreatedByMixinResource, UserReferenceResource
 from odmbase.common.api import CommonModelResource, CommonApiKeyAuthentication, CommonResource
 from odmbase.common.models import CommonModel
@@ -21,8 +21,7 @@ class CommentResource(CommonModelResource, AutoAssignCreatedByMixinResource):
 
     get_dst = GenericForeignKeyField({
         CommonModel: CommonResource,
-        Goal: GoalResource,
-        TeamGoal: TeamGoalResource,
+        CommonGoal: CommonGoalResource,
         Update: UpdateResource
         # Inspiration: InspirationResource # IN THE FUTURE
     }, 'get_dst', readonly=True, full=True)
