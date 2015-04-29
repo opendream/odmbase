@@ -229,7 +229,7 @@ class CommonModelResource(six.with_metaclass(CommonModelDeclarativeMetaclass, Ba
         if not format:
             format = request.META.get('CONTENT_TYPE', 'application/json')
 
-        if format == 'application/x-www-form-urlencoded':
+        if format.startswith('application/x-www-form-urlencoded'):
             return request.POST
 
         if format.startswith('multipart'):
