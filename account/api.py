@@ -4,6 +4,7 @@ from django.conf.urls import url
 from django.contrib.auth import authenticate, logout
 from django.contrib.auth.tokens import default_token_generator
 from django.db import models
+from django.db.models import Q, QuerySet
 from django.utils.http import urlsafe_base64_decode
 
 from django.core.urlresolvers import NoReverseMatch, reverse, resolve, Resolver404, get_script_prefix
@@ -23,6 +24,7 @@ from django.contrib.auth import get_user_model
 from social_auth.backends.facebook import BACKENDS as FACEBOOK_BACKENDS
 from social_auth.backends.google import BACKENDS as GOOGLE_BACKENDS
 from social_auth.backends.twitter import BACKENDS as TWITTER_BACKENDS
+from odmbase.social_auth.backends.contrib.instagram import BACKENDS as INSTAGRAM_BACKENDS
 
 from odmbase.api.fields import SorlThumbnailField
 
@@ -37,11 +39,18 @@ BACKENDS = {}
 BACKENDS.update(FACEBOOK_BACKENDS)
 BACKENDS.update(GOOGLE_BACKENDS)
 BACKENDS.update(TWITTER_BACKENDS)
+BACKENDS.update(INSTAGRAM_BACKENDS)
 
 User = get_user_model()
 
 # post image
 # curl -F "image=@hipster.png" localhost:8000/api/v1/user/87/set_image/
+
+def get_query_user_search():
+    query = User.objects.all().query
+    query.group_by = ['account_user.commonmodel_ptr_id', 'common_commonmodel.id']
+    results = QuerySet(query=query, model=User)
+    return results
 
 class UserResource(ImageAttachResource, CommonModelResource):
 
@@ -58,18 +67,23 @@ class UserResource(ImageAttachResource, CommonModelResource):
     is_new = fields.CharField(attribute='is_new', null=True, readonly=True)
 
     class Meta:
-        queryset = User.objects.all()
+        queryset = get_query_user_search()
         resource_name = 'user'
         authorization = CommonAnonymousPostAuthorization()
         authentication = CommonAnonymousPostApiKeyAuthentication()
         always_return_data = True
         detail_uri_name = 'username'
         include_absolute_url = True
-        #excludes = ['password']
+        #excludes = ['password', 'email']
         filtering = {
             'username': ALL,
             'id': ALL,
+            'display_name': ALL,
+            'first_name': ALL,
+            'last_name': ALL,
+            'email': ALL
         }
+        ordering = ['ordering']
 
     def prepend_urls(self):
         return super(UserResource, self).prepend_urls() + [
@@ -96,6 +110,47 @@ class UserResource(ImageAttachResource, CommonModelResource):
                 (self._meta.resource_name, trailing_slash()),
                 self.wrap_view('reset_password'), name='api_reset_password'),
         ]
+
+
+    def build_filters(self, filters=None):
+        if filters is None:
+            filters = {}
+        orm_filters = super(UserResource, self).build_filters(filters)
+
+        if ('q' in filters):
+            q = filters['q']
+            qset = (
+                Q(username__icontains=q) |
+                Q(first_name__icontains=q) |
+                Q(last_name__icontains=q) |
+                Q(email__icontains=q)
+            )
+            orm_filters.update({'custom': qset})
+
+        return orm_filters
+
+
+    def apply_filters(self, request, applicable_filters):
+        if 'custom' in applicable_filters:
+            custom = applicable_filters.pop('custom')
+        else:
+            custom = None
+
+        semi_filtered = super(UserResource, self).apply_filters(request, applicable_filters)
+
+        semi_filtered.group_by = ['id']
+
+        return semi_filtered.filter(custom) if custom else semi_filtered
+
+
+    def dehydrate(self, bundle):
+        super(UserResource, self).dehydrate(bundle)
+        # Protect for secure data
+        if not bundle.obj.user_can_edit(bundle.request.user):
+            bundle.data.pop('email', None)
+            bundle.data.pop('password', None)
+
+        return bundle
 
     def _login(self, request, user):
 
@@ -317,8 +372,9 @@ class UserReferenceResource(UserResource):
         #TODO: remove email field when upload image complete
         include_absolute_url = True
 
-        fields = ['id', 'unicode_string', 'username',
-                  'image', 'image_thumbnail_1x', 'image_thumbnail_2x', 'image_thumbnail_3x']
+        fields = ['id', 'unicode_string', 'username', 'email',
+                  'image', 'image_thumbnail_1x', 'image_thumbnail_2x', 'image_thumbnail_3x',
+                  'inst_name']
         allowed_methods = ['get', 'post'],
         filtering = {
             'username': ALL,
@@ -419,6 +475,7 @@ class SocialSignResource(ImageAttachResource, CommonModelResource):
         backend = Backend(request=bundle.request, redirect='/')
 
         user = backend.do_auth(access_token)
+        print user
 
         if user and user.is_active:
             bundle.obj = user

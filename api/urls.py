@@ -12,6 +12,10 @@ v1_api.register(ImageResource())
 from account.api import UserResource
 v1_api.register(UserResource())
 
+# Search
+from odmbase.search.api import SearchResource
+v1_api.register(SearchResource())
+
 try:
 
     from api.registers import API_RESOURCES

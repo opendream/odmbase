@@ -22,8 +22,8 @@ class Like(CommonModel):
 
     #created = models.DateTimeField(verbose_name=_('created'), auto_now_add=True)
 
-    def __unicode(self):
-        return '%s liked: "%s"' % (self.src.get_full_name(), self.message)
+    def __unicode__(self):
+        return '%s liked: "%s"' % (self.src.get_full_name(), self.dst.id)
 
     def save(self, commit=True, *args, **kwargs):
         is_new = self.pk is None
@@ -37,11 +37,20 @@ class Like(CommonModel):
         instance = self.dst.cast()
 
         # Update likes count
+        likes_count = 0
         if hasattr(instance, 'likes_count'):
             likes_count = Like.objects.filter(dst=instance.commonmodel_ptr).count()
             instance.likes_count = likes_count
             instance.save()
 
+            # print likes_count
+
+        if likes_count and hasattr(instance, 'hot_score'):
+            try:
+                score = instance.vote_score
+                instance.update_hot_score(score, self.created)
+            except:
+                instance.update_hot_score(likes_count, self.created)
 
         # add to redis feed
         if HAS_FEED_INTEGRATION:

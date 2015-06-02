@@ -1,14 +1,15 @@
 {% load static %}
 <!doctype html>
-<!--[if lt IE 7]>      <html class="no-js lt-ie9 lt-ie8 lt-ie7"> <![endif]-->
-<!--[if IE 7]>         <html class="no-js lt-ie9 lt-ie8"> <![endif]-->
-<!--[if IE 8]>         <html class="no-js lt-ie9"> <![endif]-->
-<!--[if gt IE 8]><!--> <html class="no-js"> <!--<![endif]-->
+<!--[if lt IE 7]>      <html class="no-js lt-ie9 lt-ie8 lt-ie7" ng-app="{{ NG_APP }}"> <![endif]-->
+<!--[if IE 7]>         <html class="no-js lt-ie9 lt-ie8" ng-app="{{ NG_APP }}"> <![endif]-->
+<!--[if IE 8]>         <html class="no-js lt-ie9" ng-app="{{ NG_APP }}"> <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" ng-app="{{ NG_APP }}"> <!--<![endif]-->
     <head>
+        <script type="text/javascript">var SITE_NAME = '{{ SITE_NAME }}';</script>
+        <title ng-bind="pageTitle">{{ page_title }}</title>
 
-        <title>{{ SITE_NAME }}</title>
-        <link rel="shortcut icon" href="{{ SITE_FAVICON_URL }}" type="image/vnd.microsoft.icon">
-
+        <link rel="apple-touch-icon" href="{{ SITE_FAVICON_URL }}" />
+        <link rel="shortcut icon" href="{{ SITE_FAVICON_URL }}" />
         <link href="/static/bower_components/font-awesome/css/font-awesome.min.css" rel="stylesheet">
         <link href="/static/bower_components/angular-loading-bar/build/loading-bar.css" rel="stylesheet">
         <link href="/static/bower_components/textAngular/src/textAngular.css" rel="stylesheet">
@@ -21,6 +22,8 @@
         <link href="/static/bower_components/angular-dropdowns/dist/angular-dropdowns.css" rel="stylesheet">
         <link href="/static/bower_components/angular-carousel/dist/angular-carousel.css" rel="stylesheet" type="text/css" />
         <link href="/static/bower_components/angular-pretty-checkable/dist/pretty-checkable.css" rel="stylesheet" type="text/css" />
+        <link href="/static/bower_components/angular-tour/dist/angular-tour.css" rel="stylesheet" type="text/css" />
+        <link href="/static/bower_components/angular-chart.js/dist/angular-chart.css" rel="stylesheet" />
 
         <link href="/static/app/odmbase/components/ng-tags-input/ng-tags-input.min.css" rel="stylesheet">
         <link href="/static/app/app.css" rel="stylesheet">
@@ -35,14 +38,15 @@
 
     </head>
 
-    <body ng-app="{{ NG_APP }}">
+    <body>
 
-        <div id="content-wrapper">
+        <div id="content-wrapper" ng-class="pageClass">
             <div id="overlay"></div>
 
-            <div ng-show="!hideNavbar" ng-include="'/static/components/navbar/navbar.html'"></div>
-            <div ui-view=""></div>
-
+            <div class="main-menu" ng-show="!hideNavbar" ng-include="'/static/components/navbar/navbar.html'"></div>
+            <div class="main-container" ng-if="!pageNotFound && !accessDenied" ui-view=""></div>
+            <div ng-if="pageNotFound" ng-include="'/static/app/odmbase/components/error/404.html'"></div>
+            <div ng-if="accessDenied" ng-include="'/static/app/odmbase/components/error/403.html'"></div>
             {% block base_content %}{% endblock %}
 
 
@@ -65,6 +69,13 @@
             </script>
             {% endif %}
 
+            {% if SOCIAL_FEED_TAGS %}
+            <script type="text/javascript">
+                var SOCIAL_FEED_TAGS = {{ SOCIAL_FEED_TAGS|safe }};
+            </script>
+            {% endif %}
+
+
 
             <!--[if lt IE 9]>
             <script src="/static/bower_components/es5-shim/es5-shim.js"></script>
@@ -74,6 +85,7 @@
 
             <!-- build:js /static/dist/scripts/vendor.js -->
             <!-- bower:js -->
+            <script src="/static/bower_components/modernizr/modernizr.js"></script>
             <script src="/static/bower_components/jquery/dist/jquery.js"></script>
             <script src="/static/bower_components/es5-shim/es5-shim.js"></script>
             <script src="/static/bower_components/angular/angular.js"></script>
@@ -99,8 +111,6 @@
             <script src="/static/bower_components/angular-gravatar/build/md5.js"></script>
             <script src="/static/bower_components/angular-gravatar/build/angular-gravatar.js"></script>
             <script src="/static/bower_components/sweetalert/lib/sweet-alert.js"></script>
-            <script src="/static/bower_components/jquery-ui/ui/jquery-ui.js"></script>
-            <script src="/static/bower_components/angular-ui-slider/src/slider.js"></script>
             <script src="/static/bower_components/ng-file-upload/angular-file-upload.js"></script>
             <script src="/static/bower_components/angular-local-storage/dist/angular-local-storage.js"></script>
             <script src="/static/bower_components/underscore.string/dist/underscore.string.js"></script>
@@ -136,7 +146,23 @@
             <script src="/static/bower_components/imagesloaded/imagesloaded.js"></script>
             <script src="/static/bower_components/angular-masonry/angular-masonry.js"></script>
             <script src="/static/bower_components/satellizer/satellizer.js"></script>
+            <script src="/static/bower_components/angular-vs-repeat/src/angular-vs-repeat.js"></script>
+            <script src="/static/bower_components/momentjs/moment.js"></script>
+            <script src="/static/bower_components/humanize-duration/humanize-duration.js"></script>
+            <script src="/static/bower_components/angular-timer/dist/angular-timer.js"></script>
+            <script src="/static/bower_components/angular-translate/angular-translate.js"></script>
+            <script src="/static/bower_components/messageformat/messageformat.js"></script>
+            <script src="/static/bower_components/angular-translate-interpolation-messageformat/angular-translate-interpolation-messageformat.js"></script>
+            <script src="/static/bower_components/angular-translate-storage-cookie/angular-translate-storage-cookie.js"></script>
+            <script src="/static/bower_components/angular-translate-storage-local/angular-translate-storage-local.js"></script>
+            <script src="/static/bower_components/angular-tour/dist/angular-tour-tpls.min.js"></script>
+            <script src="/static/bower_components/Chart.js/Chart.js"></script>
+            <script src="/static/bower_components/angular-chart.js/dist/angular-chart.js"></script>
             <!-- endbower -->
+            <script src="/static/bower_components/messageformat/locale/th.js"></script>
+            <script src="/static/bower_components/angular-bindonce/bindonce.min.js" type="text/javascript" ></script>
+            <script src="/static/bower_components/angular-nl2br/angular-nl2br.min.js" type="text/javascript" ></script>
+
             <script src="/static/bower_components/jquery-cycle2/build/plugin/jquery.cycle2.center.min.js" type="text/javascript" ></script>
             <script src="/static/bower_components/jquery-cycle2/build/plugin/jquery.cycle2.swipe.min.js" type="text/javascript" ></script>
 
@@ -149,6 +175,8 @@
 
             <script src="/static/app/odmbase/app.js"></script>
             <script src="/static/app/app.js"></script>
+            <script src="/static/app/odmbase/locale/locale.js"></script>
+
 
             <script src="/static/app/odmbase/components/auth/auth.service.js"></script>
             <script src="/static/app/odmbase/components/model/model.service.js"></script>
@@ -163,6 +191,10 @@
             <script src="/static/app/odmbase/components/ui/parallax.directive.js"></script>
             <script src="/static/app/odmbase/components/ng-tags-input/ng-tags-input.js"></script>
             <script src="/static/app/odmbase/components/ng-text-truncate/ng-text-truncate.js"></script>
+            <script src="/static/bower_components/jquery-ui/ui/jquery-ui.js"></script>
+            <script src="/static/app/odmbase/components/jquery.ui.touch-punch.min.js"></script>
+            <script src="/static/app/odmbase/components/angular-ui-slider/src/slider.js"></script>
+
 
 
 
@@ -171,6 +203,11 @@
             <script src="/static/app/odmbase/image/image.model.js"></script>
 
             <script src="/static/app/odmbase/common/common.model.js"></script>
+
+            <script src="/static/app/odmbase/search/search.model.js"></script>
+            <script src="/static/app/odmbase/search/search.js"></script>
+            <script src="/static/app/odmbase/search/search.controller.js"></script>
+
 
             {% if ENABLE_COMMENT %}
             <script src="/static/app/odmbase/comment/comment.model.js"></script>
@@ -185,6 +222,8 @@
             <!-- endbuild -->
 
             <script src="/static/app/settings_local.js"></script><!-- Implement on Production -->
+            <script src="/static/templates.js"></script>
+
             {% include "project_custom_script.html" %}
 
             <!-- build:js /static/dist/scripts/vendor-footer.js -->

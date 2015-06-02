@@ -56,7 +56,7 @@ class AbstractCommonModel(models.Model):
 
     def save(self, commit=True, force_insert=False, force_update=False, *args, **kwargs):
 
-        #self.full_clean()
+        self.full_clean()
 
         ALLOWED_TAGS = [
             'p', 'em', 'strong', 'span', 'a', 'br', 'strong', 'ul', 'ol', 'li', 'img',
@@ -136,6 +136,9 @@ class AbstractCommonModel(models.Model):
         }
         return self.CACHE_SEO_META
 
+    def get_fields(self):
+        return [(field.name, field.value_to_string(self)) for field in self._meta.fields if field.name not in ['password', 'key']]
+
 
 
 class AbstractCommonTrashModel(AbstractCommonModel):
@@ -213,8 +216,8 @@ class AbstractPermalink(models.Model):
 
 class AbstractPriorityModel(models.Model):
 
-    priority = models.PositiveIntegerField(default=0)
-    ordering = models.PositiveIntegerField(null=True, blank=True)
+    priority = models.IntegerField(default=0)
+    ordering = models.IntegerField(null=True, blank=True)
 
     class Meta:
         abstract = True
@@ -227,7 +230,7 @@ class AbstractPriorityModel(models.Model):
             #instance = self.objects.get(id=self.id)
             self.save()
         else:
-            self.ordering = int('%s%s' % (('0' * 2 + '%s' % self.priority)[-2:], ('0' * 8 + '%s' % self.id)[-8:]))
+            self.ordering = int('%s%s' % (('0' * 2 + '%s' % self.priority)[-2:], ('0' * 7 + '%s' % self.id)[-7:]))
             super(AbstractPriorityModel, self).save(*args, **kwargs)
 
 
@@ -259,6 +262,8 @@ class CommonModel(AbstractAwesomeModel):
 
     created = models.DateTimeField(_('Created'), auto_now_add=True, default=timezone.now)
     changed = models.DateTimeField(_('Changed'), auto_now=True, default=timezone.now)
+    #created = models.DateTimeField(_('Created'), default=timezone.now)
+    #changed = models.DateTimeField(_('Changed'), default=timezone.now)
 
     def __init__(self, *args, **kwargs):
         super(CommonModel, self).__init__(*args, **kwargs)
@@ -285,3 +290,9 @@ class CommonModel(AbstractAwesomeModel):
 
     def cast(self):
         return self.real_type.get_object_for_this_type(pk=self.pk)
+
+
+class Variable(models.Model):
+
+    name = models.CharField(max_length=60, unique=True)
+    value = models.TextField(null=True, blank=True)

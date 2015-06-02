@@ -11,6 +11,7 @@ def helper(request):
         'SITE_NAME': settings.SITE_NAME,
         'SITE_SLOGAN': settings.SITE_SLOGAN,
         'SITE_FAVICON_URL': settings.SITE_FAVICON_URL,
+        'SITE_DESCRIPTION': settings.SITE_DESCRIPTION,
         'STATUS_PUBLISHED': STATUS_PUBLISHED,
         'STATUS_PENDING': STATUS_PENDING,
         'STATUS_DRAFT': STATUS_DRAFT,
@@ -22,5 +23,10 @@ def helper(request):
         'ENABLE_COMMENT': settings.ENABLE_COMMENT,
         'ENABLE_LIKE': settings.ENABLE_LIKE,
     }
+
+    try:
+        context['SOCIAL_FEED_TAGS'] = settings.SOCIAL_FEED_TAGS
+    except:
+        pass
 
     return context

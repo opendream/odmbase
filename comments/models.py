@@ -23,7 +23,7 @@ class Comment(CommonModel, CommonTrashReasonMixin):
     message = models.TextField(verbose_name=_('Comment'), null=True, blank=True)
     #created = models.DateTimeField(verbose_name=_('created'), auto_now_add=True)
 
-    def __unicode(self):
+    def __unicode__(self):
         return '%s commented: "%s"' % (self.src.get_full_name(), self.message)
 
     def save(self, commit=True, *args, **kwargs):

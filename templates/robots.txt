@@ -1,6 +1,9 @@
 User-agent: *
 Crawl-delay: 10
 
+Allow: /
+Allow: /crawl_index/
+
 # Directories
 Disallow: /account/login/
 Disallow: /account/password_reset/

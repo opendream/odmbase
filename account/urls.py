@@ -10,6 +10,8 @@ urlpatterns = patterns('odmbase.account.views',
     # Social Auth
     url(r'^login/facebook/$', 'login_facebook', name='login_facebook'),
     url(r'^login/twitter/$', 'login_twitter', name='login_twitter'),
+    url(r'^login/instagram/$', 'login_instagram', name='login_instagram'),
+    url(r'^login/pinterest/$', 'login_pinterest', name='login_pinterest'),
 
     #url(r'^redirect/$', 'login_facebook_redirect', name='login_facebook_redirect'),
     (r'^error/', TemplateView.as_view(template_name="account/login_error.html")),

@@ -31,7 +31,6 @@ class LikeResource(CommonModelResource, AutoAssignCreatedByMixinResource):
         queryset = Like.objects.all()
         resource_name = 'like'
         authentication = CommonApiKeyAuthentication()
-        limit = 2
         filtering = {
             'dst': ALL_WITH_RELATIONS,
             'id': ALL

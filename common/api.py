@@ -131,6 +131,7 @@ class CommonAuthorization(Authorization):
     def update_list(self, object_list, bundle):
         allowed = []
 
+        return []
         # Since they may not all be saved, iterate over them.
         for obj in object_list:
             if obj.user_can_edit(bundle.request.user):
@@ -142,7 +143,8 @@ class CommonAuthorization(Authorization):
         return bundle.obj.user_can_edit(bundle.request.user)
 
     def delete_list(self, object_list, bundle):
-        return self.update_list(object_list, bundle)
+        return []
+        #return self.update_list(object_list, bundle)
 
     def delete_detail(self, object_list, bundle):
         return self.update_detail(object_list, bundle)
@@ -460,8 +462,9 @@ class LikeAttachResource(ModelResource):
         bundle.data['is_liked'] = False
         if bundle.request.user and bundle.request.user.is_authenticated():
             try:
-                Like.objects.get(src=bundle.request.user, dst=bundle.obj)
+                like = Like.objects.get(src=bundle.request.user, dst=bundle.obj)
                 bundle.data['is_liked'] = True
+                bundle.data['liked_id'] = like.id
             except Like.DoesNotExist:
                 pass
 
