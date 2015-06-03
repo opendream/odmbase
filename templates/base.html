@@ -44,9 +44,11 @@
             <div id="overlay"></div>
 
             <div class="main-menu" ng-show="!hideNavbar" ng-include="'/static/components/navbar/navbar.html'"></div>
-            <div class="main-container" ng-if="!pageNotFound && !accessDenied" ui-view=""></div>
+            <div class="main-container" ng-if="!pageNotFound && !accessDenied && !loading" ui-view=""></div>
             <div ng-if="pageNotFound" ng-include="'/static/app/odmbase/components/error/404.html'"></div>
             <div ng-if="accessDenied" ng-include="'/static/app/odmbase/components/error/403.html'"></div>
+            <div ng-if="loading" ng-include="'/static/app/odmbase/components/template/loading.html'"></div>
+
             {% block base_content %}{% endblock %}
 
 

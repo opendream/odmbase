@@ -293,6 +293,11 @@ class CommonModel(AbstractAwesomeModel):
 
 
 class Variable(models.Model):
-
     name = models.CharField(max_length=60, unique=True)
     value = models.TextField(null=True, blank=True)
+
+class PageNotFound(AbstractCommonModel):
+    path = models.CharField(max_length=255, unique=True)
+
+    def __unicode__(self):
+        return self.path

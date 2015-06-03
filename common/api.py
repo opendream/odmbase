@@ -23,7 +23,7 @@ from django.core.serializers import json as djangojson
 from tastypie.utils import trailing_slash
 from odmbase.api.fields import SorlThumbnailField
 
-from odmbase.common.models import CommonModel, Image
+from odmbase.common.models import CommonModel, Image, PageNotFound
 
 
 class VerboseSerializer(Serializer):
@@ -448,6 +448,14 @@ class ImageResource(CommonModelResource):
         queryset = Image.objects.all()
         resource_name = 'image'
         authentication = CommonApiKeyAuthentication()
+
+class PageNotFoundResource(CommonModelResource):
+
+    class Meta:
+        queryset = PageNotFound.objects.all()
+        resource_name = 'page_not_found'
+        authorization = CommonAnonymousPostAuthorization()
+        authentication = CommonAnonymousPostApiKeyAuthentication()
 
 
 # Don't move na ja

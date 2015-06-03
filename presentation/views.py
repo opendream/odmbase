@@ -17,14 +17,14 @@ from bs4 import BeautifulSoup
 # Home
 # =============================
 import requests
-from odmbase.common.models import CommonModel
+from odmbase.common.models import CommonModel, PageNotFound
 
 
 def home(request):
 
-
     meta = ''
     model = None
+    status_code = 200
 
     try:
         model = {'seo_meta': settings.SITE_META_PAGES[request.path[1:]]}
@@ -50,6 +50,14 @@ def home(request):
                     break
 
     if not model:
+
+        if request.path != '/':
+            try:
+                PageNotFound.objects.get(path=request.path)
+                status_code = 404
+            except PageNotFound.DoesNotExist:
+                pass
+
         model = {'seo_meta': {
             'title': settings.SITE_SLOGAN,
             'description': settings.SITE_DESCRIPTION,
@@ -76,7 +84,7 @@ def home(request):
     if request.GET.get('get_title'):
         return HttpResponse(page_title)
     else:
-        return render(request, 'base.html', {'meta': meta, 'page_title': page_title})
+        return render(request, 'base.html', {'meta': meta, 'page_title': page_title}, status=status_code)
 
 
 def handler403(request):
