@@ -9,6 +9,7 @@ urlpatterns = patterns('',
     url(r'^api/', include('odmbase.api.urls')),
     url(r'^admin/', include(admin.site.urls)),
     url(r'^account/', include('odmbase.account.urls')),
+    url(r'^complete/(?P<backend>[^/]+)/$', 'odmbase.account.views.complete', name='account_complete'),
     url(r'', include('social_auth.urls')),
 )
 

@@ -26,7 +26,25 @@ from odmbase.api.fields import SorlThumbnailField
 from odmbase.common.models import CommonModel, Image
 
 
-class VerboseSerializer(Serializer):
+
+class ISO8601UTCOffsetSerializer(Serializer):
+    """
+    Default is ``iso-8601``, which looks like "2014-01-21T19:31:58.150273+00:00".
+    """
+    # Tastypie>=0.9.6,<=0.11.0
+    def format_datetime(self, data):
+        # data = make_naive(data) # Skipping this line..
+
+        if self.datetime_formatting == 'rfc-2822':
+            return dateformat.format(make_naive(data), 'r')
+        if self.datetime_formatting == 'iso-8601-strict':
+            # Remove microseconds to strictly adhere to iso-8601
+            data = data - datetime.timedelta(microseconds=data.microsecond)
+
+        return data.isoformat()
+
+
+class VerboseSerializer(ISO8601UTCOffsetSerializer):
     def to_json(self, data, options=None):
         """
         Given some Python data, produces JSON output.
@@ -171,9 +189,8 @@ class CommonModelDeclarativeMetaclass(ModelDeclarativeMetaclass):
 
         if getattr(new_class._meta, 'authorization').__class__ is ReadOnlyAuthorization:
             setattr(new_class._meta, 'authorization', CommonAuthorization())
-            
-        return new_class
 
+        return new_class
 
 
 class CommonModelResource(six.with_metaclass(CommonModelDeclarativeMetaclass, BaseModelResource)):
@@ -229,7 +246,7 @@ class CommonModelResource(six.with_metaclass(CommonModelDeclarativeMetaclass, Ba
         if not format:
             format = request.META.get('CONTENT_TYPE', 'application/json')
 
-        if format == 'application/x-www-form-urlencoded':
+        if format.startswith('application/x-www-form-urlencoded'):
             return request.POST
 
         if format.startswith('multipart'):
@@ -575,7 +592,7 @@ class BetterManyToManyField(ToManyField):
 @csrf_exempt
 def scrap_website_meta(request):
     # CHECK USER IS AUTHENTICATED
-    if CommonApiKeyAuthentication().is_authenticated(request).status_code == 401:
+    if CommonApiKeyAuthentication().is_authenticated(request) != True:
         return HttpResponse(status=401)
 
     if request.method == 'POST':
@@ -593,4 +610,3 @@ def scrap_website_meta(request):
         })
     else:
         return HttpResponse(status=405)
-

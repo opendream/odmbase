@@ -1,3 +1,4 @@
+# -*- encoding: utf-8 -*-
 from django.utils.translation import ugettext_lazy as _
 
 # Common status
@@ -7,11 +8,11 @@ STATUS_DRAFT = 0
 STATUS_DELETED = -2
 
 # Cart status
-STATUS_CANCELLED = -3
-STATUS_PAYING = -5
-STATUS_PAID = 2
-STATUS_DELIVERED = 3
-STATUS_SETTLED = 4
+STATUS_CANCELLED = -3   # ยกเลิกการซื้อ (โดยใครก็ได้)
+STATUS_PAYING    = -5   # กำลังจ่ายเงิน
+STATUS_PAID      =  2   # จ่ายแล้ว
+STATUS_DELIVERED =  3   # ผู้ซื้อได้รับสินค้าแล้ว
+STATUS_SETTLED   =  4   # ปิดรายการขาย
 
 # Product
 STATUS_SOLD = -4

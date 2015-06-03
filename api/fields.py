@@ -16,17 +16,24 @@ class SorlThumbnailField(DictField):
     def __init__(self, **kwargs):
         kwargs['readonly'] = True
         self.thumb_options = kwargs.pop('thumb_options', {})
+
+        try:
+            self.thumb_options['upscale']
+        except KeyError:
+            self.thumb_options['upscale'] = False
+
         super(SorlThumbnailField, self).__init__(**kwargs)
  
     def convert(self, value):
         if value is None or not hasattr(value, 'url'):
             return None
 
-
         try:
             options = self.thumb_options.copy()
             geometry = options.pop('geometry', '200x200')
             thumbnail = get_thumbnail(value, geometry, **options)
+
+            print thumbnail.url
 
             dict_thumbnail = dict(
                 url=thumbnail.url,
@@ -34,6 +41,8 @@ class SorlThumbnailField(DictField):
                 height=thumbnail.height,
                 style={True: 'portrait', False: 'landscape'}[thumbnail.is_portrait()]
             )
-        except ThumbnailError:
+        except:
             dict_thumbnail = None
+
+
         return dict_thumbnail

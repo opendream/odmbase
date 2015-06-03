@@ -75,6 +75,7 @@ TEMPLATE_CONTEXT_PROCESSORS = (
 )
 
 TEMPLATE_DIRS = (
+    os.path.join(BASE_DIR, 'dist'),
     os.path.join(BASE_DIR, 'conf/templates'),
     os.path.join(BASE_DIR, 'odmbase/templates'),
     os.path.join(BASE_DIR, 'static/app'),
@@ -124,6 +125,7 @@ STATICFILES_FINDERS = (
 )
 STATICFILES_DIRS = (
     os.path.join(BASE_DIR, 'static'),
+    os.path.join(BASE_DIR, 'dist/static'),
 )
 
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
@@ -132,9 +134,11 @@ MEDIA_URL = '/media/'
 # Account
 AUTH_USER_MODEL = 'account.User'
 AUTHENTICATION_BACKENDS = (
+    'social_auth.backends.twitter.TwitterBackend',
     'social_auth.backends.facebook.FacebookBackend',
+    'social_auth.backends.google.GoogleOAuth2Backend',
+
     # TODO: Implement later
-    #'social_auth.backends.twitter.TwitterBackend',
     #'social_auth.backends.contrib.linkedin.LinkedinBackend',
     'odmbase.account.backends.EmailOrUsernameModelBackend',
     'django.contrib.auth.backends.ModelBackend'
@@ -157,7 +161,13 @@ SOCIAL_AUTH_UUID_LENGTH = 22
 FACEBOOK_APP_ID = '445472018940505'
 FACEBOOK_API_SECRET = '55bdd2f3c977a370255a5713af4121e2'
 FACEBOOK_EXTENDED_PERMISSIONS = ['email']
+#GOOGLE_API_KEY = 'AIzaSyDyMoB-GWGPpxmJk2ZIPGV-hBK4QamNCBI'
+GOOGLE_OAUTH2_CLIENT_ID = '872757681038-thjv1tb013cq71jhp0rjebuckk96ir78.apps.googleusercontent.com'
+GOOGLE_OAUTH2_CLIENT_SECRET = '_5ewW4r4MQ597wYjNZpykX64'
+#GOOGLE_OAUTH2_USE_UNIQUE_USER_ID = True
 
+TWITTER_CONSUMER_KEY         = 'XBp3ZMELyPFBVXs5r0xxT9aPw'
+TWITTER_CONSUMER_SECRET      = 'jCq7G9iifV4DJjVTv1pdVLdXng5kHib8o3cNeXZRAqdhuCJjbc'
 
 #LOGIN_URL = '/account/login/'
 #LOGIN_REDIRECT_URL = '/'
@@ -172,6 +182,8 @@ SOCIAL_AUTH_NEW_ASSOCIATION_REDIRECT_URL = '/account/redirect/'
 SOCIAL_AUTH_COMPLETE_URL_NAME = 'socialauth_complete'
 SOCIAL_AUTH_ASSOCIATE_URL_NAME = 'socialauth_associate_complete'
 
+#from social_auth.backends.pipeline.user import create_user
+#from social_auth.backends.pipeline.social import social_auth_user
 SOCIAL_AUTH_PIPELINE = (
     'social_auth.backends.pipeline.social.social_auth_user',
     'social_auth.backends.pipeline.associate.associate_by_email',

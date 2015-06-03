@@ -1,11 +1,14 @@
+<meta name="description" content="{{ model.seo_meta.description }}">
+
+
 <meta property="og:url" content="{{ current_url }}">
-<meta property="og:title" content="{{ site_name }}: {{ model.seo_meta.title }}">
+<meta property="og:title" content="{{ model.seo_meta.title }}">
 <meta property="og:site_name" content="{{ site_name }}">
 <meta property="og:description" content="{{ model.seo_meta.description }}">
 <meta property="og:image" content="{{ base_url }}{{ model.seo_meta.image }}">
 
 <meta name="twitter:site" content="{{ current_url }}">
-<meta name="twitter:title" content="{{ site_name }}: {{ model.seo_meta.title }}">
+<meta name="twitter:title" content="{{ model.seo_meta.title }}">
 <meta name="twitter:description" content="{{ model.seo_meta.description }}">
 <meta name="twitter:card" content="{{ base_url }}{{ model.seo_meta.image }}">
 <meta name="twitter:image:src" content="{{ base_url }}{{ model.seo_meta.image }}">

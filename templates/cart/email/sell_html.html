@@ -1,0 +1,59 @@
+{% load i18n %}
+<!doctype html>
+<html>
+<head>
+    <meta content="text/html; charset=utf-8" http-equiv="Content-Type">
+    <meta content="width=device-width" name="viewport">
+    <title>มีรายการซื้อสินค้าใหม่</title>
+    <style>
+    .item-list td {
+        padding: 4px;
+        border-bottom: 1px dashed #ccc;
+    }
+    </style>
+</head>
+
+<body>
+    <p style="font-size: 16px; text-align:left; font-weight: bold; color: #5f3c30;">{% load i18n %}สวัสดีค่ะคุณ {{ seller.unicode_string }}</p>
+
+    <p>
+    เราได้รับคำสั่งซื้อหมายเลข {{ order.get_transaction_id }} จากผู้ใช้ชื่อ {{ order.created_by.unicode_string }} มีสินค้าทั้งหมด {{ total_items }} ชิ้น เป็นสินค้าของคุณจำนวน {{ total_seller_items }} ชิ้น ดังนี้
+    </p>
+
+    <table class="item-list" cellpadding="0" style="border: 4px solid #f2f2f2; border-spacing: 0; width: 640px;">
+        <thead>
+            <tr>
+                <td>รายการ</td>
+                <td>จำนวน</td>
+                <td style="text-align:right">รวมราคา (บาท)</td>
+            </tr>
+        </thead>
+        <tbody>
+            {% for item in items %}
+            <tr>
+                <td>{{ item.get_item.unicode_string }}</td>
+                <td>{{ item.quantity }}</td>
+                <td style="text-align:right">{{ item.total_price|floatformat:2 }}</td>
+            </tr>
+            {% endfor %}
+
+            <tr>
+                <td style="text-align:right" colspan="2">รวม</td>
+                <td style="text-align:right">{{ total_price|floatformat:2 }}</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <p>
+    ขอบคุณค่ะ
+    </p>
+
+    <table cellpadding="0" style="width: 100%; border-spacing: 0;">
+        <tr>
+            <td style="width: 700px; background-color: #f2f2f2; padding: 15px;">
+                <img src="{{ protocol }}://{{ domain }}/static/images/punjai-footer.png" style="width: 180px; float: right;" alt="ปันของที่ไม่ได้ใช้ ให้กับคนที่มีใจอยากได้" title="ปันของที่ไม่ได้ใช้ ให้กับคนที่มีใจอยากได้"/>
+            </td>
+        </tr>
+    </table>
+</body>
+</html>
