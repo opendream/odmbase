@@ -84,28 +84,28 @@ def login_twitter(request):
     from social_auth.views import auth
     return auth(request, 'twitter')
 
+def login_instagram(request):
+    if request.GET.get('next'):
+        request.session['instagram_next'] = request.GET.get('next')
+
+    from social_auth.views import auth
+    return auth(request, 'instagram')
+
+def login_pinterest(request):
+    if request.GET.get('next'):
+        request.session['pinterest_next'] = request.GET.get('next')
+
+    from social_auth.views import auth
+    return auth(request, 'pinterest')
+
+
 @csrf_exempt
 @dsa_view()
 def complete(request, backend, *args, **kwargs):
 
-    print 'pppppppp'
-    # Multiple unauthorized tokens are supported (see #521)
-    name = 'twitter' + 'unauthorized_token_name'
-    token = None
-    unauthed_tokens = request.session.get(name) or []
-    if not unauthed_tokens:
-        raise AuthTokenError(None, 'Missing unauthorized token')
-    for unauthed_token in unauthed_tokens:
-        token = Token.from_string(unauthed_token)
+    # intense logic by crosalot, ask me when you chane this
+    def do_auth(access_token, *args, **kwargs):
+        return render(request, 'account/oauth_sign.html', {'access_token': access_token})
 
-        if token.key == request.REQUEST.get('oauth_token', 'no-token'):
-            unauthed_tokens = list(set(unauthed_tokens) - set([unauthed_token]))
-            request.session[name] = unauthed_tokens
-            request.session.modified = True
-            break
-    else:
-        raise AuthTokenError(None, 'Incorrect tokens')
-
-    access_token = backend.access_token(token)
-    print 'uuuuuuuuu'
-    return render(request, 'account/oauth_sign.html', {'access_token': access_token})
+    backend.do_auth = do_auth
+    return backend.auth_complete()

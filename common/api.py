@@ -23,7 +23,7 @@ from django.core.serializers import json as djangojson
 from tastypie.utils import trailing_slash
 from odmbase.api.fields import SorlThumbnailField
 
-from odmbase.common.models import CommonModel, Image
+from odmbase.common.models import CommonModel, Image, PageNotFound
 
 
 
@@ -149,6 +149,7 @@ class CommonAuthorization(Authorization):
     def update_list(self, object_list, bundle):
         allowed = []
 
+        return []
         # Since they may not all be saved, iterate over them.
         for obj in object_list:
             if obj.user_can_edit(bundle.request.user):
@@ -160,7 +161,8 @@ class CommonAuthorization(Authorization):
         return bundle.obj.user_can_edit(bundle.request.user)
 
     def delete_list(self, object_list, bundle):
-        return self.update_list(object_list, bundle)
+        return []
+        #return self.update_list(object_list, bundle)
 
     def delete_detail(self, object_list, bundle):
         return self.update_detail(object_list, bundle)
@@ -464,6 +466,14 @@ class ImageResource(CommonModelResource):
         resource_name = 'image'
         authentication = CommonApiKeyAuthentication()
 
+class PageNotFoundResource(CommonModelResource):
+
+    class Meta:
+        queryset = PageNotFound.objects.all()
+        resource_name = 'page_not_found'
+        authorization = CommonAnonymousPostAuthorization()
+        authentication = CommonAnonymousPostApiKeyAuthentication()
+
 
 # Don't move na ja
 class LikeAttachResource(ModelResource):
@@ -477,8 +487,9 @@ class LikeAttachResource(ModelResource):
         bundle.data['is_liked'] = False
         if bundle.request.user and bundle.request.user.is_authenticated():
             try:
-                Like.objects.get(src=bundle.request.user, dst=bundle.obj)
+                like = Like.objects.get(src=bundle.request.user, dst=bundle.obj)
                 bundle.data['is_liked'] = True
+                bundle.data['liked_id'] = like.id
             except Like.DoesNotExist:
                 pass
 

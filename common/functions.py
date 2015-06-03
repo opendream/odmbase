@@ -6,10 +6,13 @@ import urllib2
 import uuid as _uu
 
 from django import template
+from django.conf import settings
 from django.contrib.admin.forms import AdminAuthenticationForm
 from django.contrib.auth import REDIRECT_FIELD_NAME, login
 from django.core.files import File
+from django.template import loader
 from django.utils.encoding import force_bytes
+from django.utils.html import strip_tags
 from django.utils.http import urlsafe_base64_encode
 from django.utils.safestring import mark_safe
 from django.utils.text import normalize_newlines, slugify
@@ -167,6 +170,13 @@ def _scrap_description(doc):
         description = doc.find(attrs={'name': 'twitter:description'})['content']
     elif doc.find(attrs={'name': 'description'}):
         description = doc.find(attrs={'name': 'description'})['content']
+    elif doc.h1:
+        description = strip_tags(doc.h1).strip()
+    elif doc.p:
+        description = strip_tags(doc.p).strip()
+
+    if len(description) > 200:
+        return description[:200] + '...'
     return description or ''
 
 def _scrap_image(doc, url):
@@ -195,3 +205,24 @@ def _scrap_image(doc, url):
             image = url_origin + '/' + image
 
     return image
+
+
+def _send_mail(subject, email, from_email, send_email,
+    html_message, fail_silently=True):
+
+    site_url = settings.SITE_URL
+    c = {
+        'content': email,
+        'site_url': site_url,
+    }
+
+    email = loader.render_to_string('email/template.html', c)
+
+    try:
+        from utilities.tasks import _send_mail as send_mail
+        send_mail.delay(subject, email, from_email, send_email, 
+            html_message=email, fail_silently=fail_silently)
+    except:
+        from django.core.mail import send_mail
+        send_mail(subject, email, from_email, send_email, 
+            html_message=email, fail_silently=fail_silently)

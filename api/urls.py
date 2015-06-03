@@ -4,13 +4,18 @@ from tastypie.api import Api
 v1_api = Api(api_name='v1')
 
 # Common
-from odmbase.common.api import CommonResource, ImageResource
+from odmbase.common.api import CommonResource, ImageResource, PageNotFoundResource
 v1_api.register(CommonResource())
 v1_api.register(ImageResource())
+v1_api.register(PageNotFoundResource())
 
 # Account
 from account.api import UserResource
 v1_api.register(UserResource())
+
+# Search
+from odmbase.search.api import SearchResource
+v1_api.register(SearchResource())
 
 try:
 

@@ -2,6 +2,8 @@ from tastypie.fields import DictField
  
 from sorl.thumbnail import get_thumbnail
 from sorl.thumbnail.helpers import ThumbnailError
+
+import sys
  
  
 class SorlThumbnailField(DictField):
@@ -43,6 +45,5 @@ class SorlThumbnailField(DictField):
             )
         except:
             dict_thumbnail = None
-
 
         return dict_thumbnail

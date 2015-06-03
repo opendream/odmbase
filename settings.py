@@ -28,6 +28,16 @@ TEMPLATE_DEBUG = True
 ALLOWED_HOSTS = ['*']
 
 
+from django.utils.translation import ugettext_lazy as _
+
+LANGUAGES = (
+   ('th', _('Thai')),
+   ('en', _('English')),
+)
+LANGUAGE_CODE = 'th'
+
+
+
 # Application definition
 
 INSTALLED_APPS = (
@@ -77,9 +87,9 @@ TEMPLATE_CONTEXT_PROCESSORS = (
 TEMPLATE_DIRS = (
     os.path.join(BASE_DIR, 'dist'),
     os.path.join(BASE_DIR, 'conf/templates'),
+    os.path.join(BASE_DIR, 'templates'),
     os.path.join(BASE_DIR, 'odmbase/templates'),
     os.path.join(BASE_DIR, 'static/app'),
-    os.path.join(BASE_DIR, 'templates'),
 )
 
 ROOT_URLCONF = 'odmbase.urls'
@@ -134,6 +144,8 @@ MEDIA_URL = '/media/'
 # Account
 AUTH_USER_MODEL = 'account.User'
 AUTHENTICATION_BACKENDS = (
+    'odmbase.social_auth.backends.contrib.instagram.InstagramBackend',
+    #'odmbase.social_auth.backends.contrib.pinterest.PinterestBackend',
     'social_auth.backends.twitter.TwitterBackend',
     'social_auth.backends.facebook.FacebookBackend',
     'social_auth.backends.google.GoogleOAuth2Backend',
@@ -151,7 +163,6 @@ LOGIN_ERROR_URL = '/account/error/'
 # Email
 EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 
-
 # DJANGO SOCIAL AUTH
 
 SOCIAL_AUTH_RAISE_EXCEPTIONS = False
@@ -168,6 +179,10 @@ GOOGLE_OAUTH2_CLIENT_SECRET = '_5ewW4r4MQ597wYjNZpykX64'
 
 TWITTER_CONSUMER_KEY         = 'XBp3ZMELyPFBVXs5r0xxT9aPw'
 TWITTER_CONSUMER_SECRET      = 'jCq7G9iifV4DJjVTv1pdVLdXng5kHib8o3cNeXZRAqdhuCJjbc'
+
+INSTAGRAM_CLIENT_ID = '7c99f01264954971bfd547a9e295b53c'
+INSTAGRAM_CLIENT_SECRET = '6f4a297d301c4ed38d18c79df061b920'
+#INSTAGRAM_REDIRECT_URI = 'http://localhost:8000/complete/instagram'
 
 #LOGIN_URL = '/account/login/'
 #LOGIN_REDIRECT_URL = '/'
@@ -196,9 +211,20 @@ SOCIAL_AUTH_PIPELINE = (
 )
 
 RESERVED_USERNAMES = [
-    'admin',
+    'admin', 'project', 'article', 'account', 'user', 'content', 'profile', 'me', 'item', 'feed', 'payment',  'ajax',
+    'node', 'notification', 'media', 'static', 'api', 'home', 'main', 'update', 'migrate'
 ]
 
+# Haystack
+HAYSTACK_CONNECTIONS = {
+    'default': {
+        'ENGINE': 'odmbase.search.backends.ConfigurableElasticSearchEngine',
+        'URL': 'http://127.0.0.1:9200/',
+        'INDEX_NAME': 'haystack',
+    },
+}
+
+HAYSTACK_SIGNAL_PROCESSOR = 'haystack.signals.RealtimeSignalProcessor'
 
 # API
 TASTYPIE_DEFAULT_FORMATS = ['json']
@@ -217,11 +243,17 @@ SITE_DOMAIN = 'project_implement.com'
 SITE_URL = 'http://%s' % SITE_DOMAIN
 SITE_LOGO_URL = '%simages/logo-project_implement.png' % STATIC_URL
 SITE_FAVICON_URL = '%simages/favicon-project_implement.png' % STATIC_URL
+SITE_DESCRIPTION = 'Project description and seo'
 
 GOOGLE_ANALYTICS_KEY = ''
 REGISTER_CONFIRM = False
 
+SITE_META_PAGES = {}
 
+# REDDIT use active in 45000 seconds (12.5 hours)
+HOT_SCORE_SECOND_CONSTANT = 45000
+
+from celery.schedules import crontab
 # Overide settings
 try:
     from conf.settings import *
@@ -231,6 +263,10 @@ try:
 except ImportError:
     print 'Please, implement project see README.md'
 
+try:
+    from conf.settings_cron import *
+except ImportError:
+    pass
 
 try:
     from conf.settings_local import *

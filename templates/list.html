@@ -1,0 +1,24 @@
+<ul>
+{% for content in contents %}
+    {% if content.cast and content.cast.get_absolute_url %}
+    <li><a href="{{ content.cast.get_absolute_url }}">{{ content.cast }}</a></li>
+    {% endif %}
+{% endfor %}
+</ul>
+
+<div class="pagination">
+    <span class="step-links">
+        {% if contents.has_previous %}
+            <a href="?page={{ contents.previous_page_number }}">previous</a>
+        {% endif %}
+
+        <span class="current">
+            Page {{ contents.number }} of {{ contents.paginator.num_pages }}.
+        </span>
+
+        {% if contents.has_next %}
+            <a href="?page={{ contents.next_page_number }}">next</a>
+        {% endif %}
+
+    </span>
+</div>

@@ -2,7 +2,7 @@
 
 {% block base_content %}
 <script type="text/javascript">
-    window.opener.twitterSignCallback('{{ access_token }}');
+    window.opener.socialSignCallback('{{ access_token }}');
     window.close();
 </script>
 {% endblock %}

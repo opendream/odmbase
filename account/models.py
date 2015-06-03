@@ -19,6 +19,7 @@ from tastypie.models import create_api_key
 
 from odmbase.account.functions import rewrite_username
 from odmbase.common.constants import STATUS_CHOICES, STATUS_PUBLISHED, STATUS_PENDING
+from odmbase.common.functions import _send_mail
 from odmbase.common.models import CommonModel
 from odmbase.common.storage import OverwriteStorage
 
@@ -150,8 +151,13 @@ class User(AbstractPeopleField, CommonModel, AbstractBaseUser, PermissionsMixin)
 
     def save(self, commit=True, force_insert=False, force_update=False, *args, **kwargs):
 
-        if not self.username:
-            self.username = rewrite_username(self.email)
+        reg = re.compile('^[\w.@+-]+$')
+        reg.match(self.username)
+
+        if not self.username or not reg.match(self.username):
+
+            if not self.username:
+                self.username = rewrite_username(self.email)
 
         password = self.password
         is_new = self.pk is None
@@ -227,7 +233,7 @@ class User(AbstractPeopleField, CommonModel, AbstractBaseUser, PermissionsMixin)
 
 
     def user_can_edit(self, user):
-        return self == user
+        return self == user or user.is_staff
 
     def send_email_confirm(self, subject_template_name='account/email/password_reset_email_subject.txt',
                            email_template_name='account/email/password_reset_email.html',
@@ -275,5 +281,7 @@ class User(AbstractPeopleField, CommonModel, AbstractBaseUser, PermissionsMixin)
                 html_email = loader.render_to_string(html_email_template_name, c)
             else:
                 html_email = None
-            send_mail(subject, email, from_email, [user.email], html_message=html_email)
+
+            _send_mail(subject, email, from_email, [user.email], html_message=html_email)
+
 
