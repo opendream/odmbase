@@ -1,3 +1,5 @@
+# -*- coding: utf-8 -*-
+
 from collections import namedtuple
 import mimetypes
 import re
@@ -76,8 +78,8 @@ def home(request):
     page_title = settings.SITE_NAME
     if model:
         try:
-            title = model.seo_meta().get('title')
-            page_title = '%s | %s' % (truncatechars(title, 50), settings.SITE_NAME)
+            title = model.seo_meta().get('title').encode('utf-8')
+            page_title = '%s | %s' % (title[0:50], settings.SITE_NAME)
         except (AttributeError, TypeError):
             pass
 
@@ -132,4 +134,3 @@ def proxy(request):
 
         # Success! We have the file. Send it back.
         return response
->>>>>>> c1f1eb925622deeec17556b6ba18656561593d57

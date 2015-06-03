@@ -37,6 +37,5 @@ class HotScoreMixin(models.Model):
         
         # (sign * seconds / (30 * 86400)) = popular in 30 days
         self.hot_score = round(order + (sign * seconds / second_constant) + extra, 7)
-        # print self.hot_score, order, seconds
         if commit:
             self.save()

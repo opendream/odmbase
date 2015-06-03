@@ -253,7 +253,6 @@ SITE_META_PAGES = {}
 # REDDIT use active in 45000 seconds (12.5 hours)
 HOT_SCORE_SECOND_CONSTANT = 45000
 
-from celery.schedules import crontab
 # Overide settings
 try:
     from conf.settings import *

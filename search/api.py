@@ -2,8 +2,7 @@
 
 from django.contrib.auth import get_user_model
 from django.db.models.loading import get_model
-from haystack.inputs import AutoQuery
-from haystack.query import SearchQuerySet
+
 from tastypie import fields
 from tastypie.contrib.contenttypes.fields import GenericForeignKeyField
 from tastypie.resources import Resource
@@ -51,6 +50,9 @@ class SearchResource(Resource):
 
     def get_object_list(self, request):
 
+        # for case no search
+        from haystack.inputs import AutoQuery
+        from haystack.query import SearchQuerySet
 
         params = request.GET
 

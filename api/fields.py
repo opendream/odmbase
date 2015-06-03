@@ -35,8 +35,6 @@ class SorlThumbnailField(DictField):
             geometry = options.pop('geometry', '200x200')
             thumbnail = get_thumbnail(value, geometry, **options)
 
-            print thumbnail.url
-
             dict_thumbnail = dict(
                 url=thumbnail.url,
                 width=thumbnail.width,

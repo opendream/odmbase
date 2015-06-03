@@ -43,8 +43,6 @@ class Like(CommonModel):
             instance.likes_count = likes_count
             instance.save()
 
-            # print likes_count
-
         if likes_count and hasattr(instance, 'hot_score'):
             try:
                 score = instance.vote_score

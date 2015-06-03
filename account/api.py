@@ -217,8 +217,6 @@ class UserResource(ImageAttachResource, CommonModelResource):
         self.is_authenticated(request)
         self.throttle_check(request)
 
-        print request.user
-
         if not request.user or (request.user and request.user.is_anonymous()):
             return self.create_response(
                 request, {
