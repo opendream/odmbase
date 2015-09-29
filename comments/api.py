@@ -18,7 +18,6 @@ class CommentResource(CommonModelResource, AutoAssignCreatedByMixinResource):
 
     get_dst = GenericForeignKeyField(GENERIC_RESOURCES, 'get_dst', readonly=True, full=True)
 
-
     class Meta:
         queryset = Comment.objects.all()
         resource_name = 'comment'

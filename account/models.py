@@ -6,6 +6,7 @@ from uuid import uuid1
 from django.conf import settings
 from django.contrib.auth import get_user_model
 from django.core import validators
+from django.core.cache import cache
 from django.db import models
 from django.contrib.auth.models import AbstractBaseUser, UserManager, PermissionsMixin
 from django.contrib.auth.tokens import default_token_generator
@@ -14,6 +15,7 @@ from django.utils import timezone
 from django.utils.encoding import force_bytes
 from django.utils.http import urlsafe_base64_encode
 from django.utils.translation import ugettext_lazy as _
+from social_auth.db.django_models import UserSocialAuth
 from sorl.thumbnail import get_thumbnail
 from tastypie.models import create_api_key
 
@@ -194,6 +196,16 @@ class User(AbstractPeopleField, CommonModel, AbstractBaseUser, PermissionsMixin)
                     email_template_name='account/email/register_email.html',
                     subject_template_name='account/email/register_email_subject.txt'
                 )
+
+        cache.delete('user--%s' % self.id)
+
+
+    def delete(self, *args, **kwargs):
+
+        for user_social in UserSocialAuth.objects.filter(user__id=self.id):
+            user_social.delete()
+
+        return super(User, self).delete(*args, **kwargs)
 
     # play safe for original django models check active
     @property

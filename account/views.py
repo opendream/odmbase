@@ -14,7 +14,7 @@ from social_auth.decorators import dsa_view
 from social_auth.exceptions import AuthTokenError
 from social_auth.views import associate_complete, complete_process
 from odmbase import settings
-
+from social_auth.db.django_models import *
 
 def account_register_confirm(request, uidb64=None, token=None, email_setting=False):
 
