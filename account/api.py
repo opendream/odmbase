@@ -3,6 +3,7 @@
 from django.conf.urls import url
 from django.contrib.auth import authenticate, logout
 from django.contrib.auth.tokens import default_token_generator
+from django.core.cache import cache
 from django.db import models
 from django.db.models import Q, QuerySet
 from django.utils.http import urlsafe_base64_decode
@@ -47,8 +48,9 @@ User = get_user_model()
 # curl -F "image=@hipster.png" localhost:8000/api/v1/user/87/set_image/
 
 def get_query_user_search():
-    query = User.objects.all().query
-    query.group_by = ['account_user.commonmodel_ptr_id', 'common_commonmodel.id']
+    query = User.objects.filter().exclude(is_deleted=True).query
+    query.group_by = ['account_user.commonmodel_ptr_id', 'T3.id']
+
     results = QuerySet(query=query, model=User)
     return results
 
@@ -225,12 +227,22 @@ class UserResource(ImageAttachResource, CommonModelResource):
                 HttpForbidden,
             )
 
+        #self.log_throttled_access(request)
+
+        response_cached = cache.get('user--%s' % request.user.id)
+        if response_cached:
+            print '################################################################' + 'user--%s' % request.user.id
+            return response_cached
+
+        print '********************************************************' + 'user--%s' % request.user.id
+
         bundle = self.build_bundle(obj=request.user, request=request)
         bundle = self.full_dehydrate(bundle)
 
-        self.log_throttled_access(request)
+        response = self.create_response(request, bundle)
 
-        return self.create_response(request, bundle)
+        cache.set('user--%s' % request.user.id, response)
+        return response
 
     # TODO: not implement just implement like reset_password
     def register_confirm(self, request, ** kwargs):

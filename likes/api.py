@@ -25,7 +25,7 @@ class LikeResource(CommonModelResource, AutoAssignCreatedByMixinResource):
         CommonGoal: CommonGoalResource,
         Update: UpdateResource
         # Inspiration: InspirationResource # IN THE FUTURE
-    }, 'get_dst', readonly=True, full=True)
+    }, 'get_dst', readonly=True, full=False)
 
     class Meta:
         queryset = Like.objects.all()

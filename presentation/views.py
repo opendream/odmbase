@@ -18,10 +18,11 @@ from bs4 import BeautifulSoup
 # =============================
 # Home
 # =============================
+from django.views.decorators.clickjacking import xframe_options_exempt
 import requests
 from odmbase.common.models import CommonModel, PageNotFound
 
-
+@xframe_options_exempt
 def home(request):
 
     meta = ''
@@ -55,8 +56,9 @@ def home(request):
 
         if request.path != '/':
             try:
-                PageNotFound.objects.get(path=request.path)
-                status_code = 404
+                #PageNotFound.objects.get(path=request.path)
+                #status_code = 404
+                pass
             except PageNotFound.DoesNotExist:
                 pass
 

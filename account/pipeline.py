@@ -45,7 +45,7 @@ def generate_username(details, user=None, user_exists=UserSocialAuth.simple_user
         result['email'] = 'unknow.%s@%s.com' % (kwargs['uid'], kwargs['backend'].name)
         details['email'] = result['email']
 
-    result['username'] = username
+    result['username'] = rewrite_username(details['email'])
 
     return result
 
@@ -56,6 +56,8 @@ def update_profile(backend, details, response, user=None, is_new=False, *args, *
     if not details['email']:
         # TODO: update email
         pass
+    if not user:
+        return
 
     user.first_name = user.first_name or details.get('first_name')
     user.last_name = user.last_name or details.get('last_name')
