@@ -1,3 +1,4 @@
+from django.conf import settings
 from django.conf.urls import patterns, include, url
 from tastypie.api import Api
 
@@ -17,14 +18,30 @@ v1_api.register(UserResource())
 from odmbase.search.api import SearchResource
 v1_api.register(SearchResource())
 
+
 try:
 
     from api.registers import API_RESOURCES
+
     for resource in API_RESOURCES:
         v1_api.register(resource)
 
+
 except ImportError:
     pass
+
+
+if settings.ENABLE_COMMENT:
+    from odmbase.comments.api import CommentResource
+    v1_api.register(CommentResource())
+
+if settings.ENABLE_LIKE:
+    from odmbase.likes.api import LikeResource
+    v1_api.register(LikeResource())
+
+if settings.ENABLE_MESSAGE:
+    from odmbase.message.api import MessageResource
+    v1_api.register(MessageResource())
 
 from odmbase.account.api import SocialSignResource
 

@@ -22,6 +22,7 @@ def helper(request):
         'DEBUG': int(settings.DEBUG),
         'ENABLE_COMMENT': settings.ENABLE_COMMENT,
         'ENABLE_LIKE': settings.ENABLE_LIKE,
+        'ENABLE_MESSAGE': settings.ENABLE_MESSAGE,
     }
 
     try:

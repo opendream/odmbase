@@ -238,15 +238,17 @@ class AbstractAwesomeModel(AbstractCommonTrashModel, AbstractCachedModel):
     class Meta:
         abstract = True
 
-    def user_can_edit(self, user):
+    def user_can_edit(self, user, data={}):
 
         if user and user.is_authenticated() and user.is_staff:
             return True
 
         if hasattr(self, 'CREATED_BY_FIELD'):
-            return (getattr(self, self.CREATED_BY_FIELD) == user)
+            return getattr(self, self.CREATED_BY_FIELD) and (getattr(self, self.CREATED_BY_FIELD).id == user.id)
         elif hasattr(self, 'created_by'):
-            return (self.created_by == user)
+            return self.created_by and (self.created_by.id == user.id)
+        elif hasattr(self, 'common_created_by'):
+            return self.common_created_by and (self.common_created_by.id == user.id)
 
         return False
 

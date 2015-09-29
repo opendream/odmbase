@@ -77,6 +77,22 @@
             </script>
             {% endif %}
 
+            <script type="text/javascript">
+                // see constant.py
+                STATUS_PUBLISHED = 1;
+                STATUS_PENDING = -1;
+                STATUS_DRAFT = 0;
+                STATUS_DELETED = -2;
+
+                STATUS_SOLD      = -4;
+                STATUS_PAYING    = -5;
+                STATUS_CANCELLED = -3;
+                STATUS_PAID      =  2;
+                STATUS_DELIVERED =  3;
+                STATUS_SETTLED   =  4;
+                STATUS_COMPLETED =  5;
+            </script>
+
 
 
             <!--[if lt IE 9]>
@@ -207,8 +223,6 @@
             <script src="/static/app/odmbase/components/angular-ui-slider/src/slider.js"></script>
 
 
-
-
             <script src="/static/app/main/main.controller.js"></script>
 
             <script src="/static/app/odmbase/image/image.model.js"></script>
@@ -230,6 +244,13 @@
             <script src="/static/app/odmbase/like/like.controller.js"></script>
             <script src="/static/app/odmbase/like/like.directive.js"></script>
             {%  endif %}
+
+            {% if ENABLE_MESSAGE %}
+            <script src="/static/app/odmbase/message/message.model.js"></script>
+            <script src="/static/app/odmbase/message/message.controller.js"></script>
+            <script src="/static/app/odmbase/message/message.directive.js"></script>
+            {%  endif %}
+
             <!-- endbuild -->
 
             <script src="/static/app/settings_local.js"></script><!-- Implement on Production -->
@@ -239,6 +260,8 @@
 
             <!-- build:js /static/dist/scripts/vendor-footer.js -->
             <script src="/static/app/odmbase/main/main.js"></script>
+
+            {% include "project_footer_script.html" %}
 
             <script src="/static/app/odmbase/account/account.js"></script>
             <script src="/static/app/odmbase/account/profile/profile.service.js"></script>

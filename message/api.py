@@ -1,30 +1,26 @@
 from tastypie import fields
 from tastypie.constants import ALL_WITH_RELATIONS, ALL
-from tastypie.contrib.contenttypes.fields import GenericForeignKeyField
 
-from .models import Comment
+from .models import PrivateMessage
 from odmbase.account.api import AutoAssignCreatedByMixinResource, UserReferenceResource
-from odmbase.common.api import CommonModelResource, CommonApiKeyAuthentication, CommonResource
+from odmbase.common.api import CommonModelResource, CommonApiKeyAuthentication
 
 
-from odmbase.api import GENERIC_RESOURCES
 
-class CommentResource(CommonModelResource, AutoAssignCreatedByMixinResource):
+class MessageResource(CommonModelResource, AutoAssignCreatedByMixinResource):
 
     CREATED_BY_FIELD = 'src'
     created_by = fields.ForeignKey(UserReferenceResource, CREATED_BY_FIELD, use_in='detail') #delete parent field
     src = fields.ForeignKey(UserReferenceResource, CREATED_BY_FIELD, full=True, readonly=True)
-    dst = fields.ForeignKey(CommonResource, 'dst')
-
-    get_dst = GenericForeignKeyField(GENERIC_RESOURCES, 'get_dst', readonly=True, full=True)
-
+    dst = fields.ForeignKey(UserReferenceResource, 'dst', full=True)
 
     class Meta:
-        queryset = Comment.objects.all()
-        resource_name = 'comment'
+        queryset = PrivateMessage.objects.all()
+        resource_name = 'message'
         authentication = CommonApiKeyAuthentication()
         filtering = {
             'dst': ALL_WITH_RELATIONS,
+            'src': ALL_WITH_RELATIONS,
             'id': ALL
         }
         ordering = ['id']
