@@ -244,7 +244,7 @@ class User(AbstractPeopleField, CommonModel, AbstractBaseUser, PermissionsMixin)
         return self.username
 
 
-    def user_can_edit(self, user):
+    def user_can_edit(self, user, data={}):
         return self == user or user.is_staff
 
     def send_email_confirm(self, subject_template_name='account/email/password_reset_email_subject.txt',

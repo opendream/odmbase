@@ -232,7 +232,7 @@ TASTYPIE_DEFAULT_FORMATS = ['json']
 # MODULE ENABLE
 ENABLE_COMMENT = False
 ENABLE_LIKE = False
-
+ENABLE_MESSAGE = False
 
 # CUSTOM PROJECT #############################
 
@@ -271,6 +271,13 @@ try:
     from conf.settings_local import *
 except ImportError:
     pass
+
+if ENABLE_LIKE:
+    INSTALLED_APPS += ('odmbase.likes', )
+if ENABLE_COMMENT:
+    INSTALLED_APPS += ('odmbase.comments', )
+if ENABLE_MESSAGE:
+    INSTALLED_APPS += ('odmbase.message', )
 
 # TESTING #####################################################################
 if 'test' in sys.argv:

@@ -1,4 +1,3 @@
-import pytz
 
 from django.conf import settings
 from django.db import models
@@ -61,6 +60,7 @@ class Comment(CommonModel, CommonTrashReasonMixin):
 
         from notification_feeds.verbs import CommentVerb
         from notification_feeds.activities import Activity
+        import pytz
 
         extra_context = extra_context or {}
         activity = Activity(

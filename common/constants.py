@@ -13,6 +13,7 @@ STATUS_PAYING    = -5   # กำลังจ่ายเงิน
 STATUS_PAID      =  2   # จ่ายแล้ว
 STATUS_DELIVERED =  3   # ผู้ซื้อได้รับสินค้าแล้ว
 STATUS_SETTLED   =  4   # ปิดรายการขาย
+STATUS_COMPLETED =  5   # รายการขายสมบูรณ์
 
 # Product
 STATUS_SOLD = -4
@@ -24,10 +25,11 @@ STATUS_CHOICES = (
     (STATUS_DELETED, _('Deleted')),
     (STATUS_CANCELLED, _('Cancelled')),
     (STATUS_PAYING, _('Paying')),
-    (STATUS_PAID, _('Paid')),
+    (STATUS_PAID, _('Authorized')),
     (STATUS_DELIVERED, _('Delivered')),
     (STATUS_SOLD, _('Sold')),
     (STATUS_SETTLED, _('Settled')),
+    (STATUS_COMPLETED, _('Completed')),
 )
 
 NO_IP = '127.0.0.1'

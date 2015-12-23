@@ -388,7 +388,7 @@ class UserReferenceResource(UserResource):
         include_absolute_url = True
 
         fields = ['id', 'unicode_string', 'username', 'email',
-                  'image', 'image_thumbnail_1x', 'image_thumbnail_2x', 'image_thumbnail_3x',
+                  'get_image', 'image', 'image_thumbnail_1x', 'image_thumbnail_2x', 'image_thumbnail_3x',
                   'inst_name']
         allowed_methods = ['get', 'post'],
         filtering = {

@@ -124,7 +124,7 @@ class CommonAuthorization(Authorization):
         if hasattr(bundle.obj, 'status') and bundle.obj.status > 0:
             return True
 
-        if bundle.obj.user_can_edit(bundle.request.user):
+        if bundle.obj.user_can_edit(bundle.request.user, data=bundle.data):
             return True
 
         if not hasattr(bundle.obj, 'status'):
@@ -158,7 +158,7 @@ class CommonAuthorization(Authorization):
         return allowed
 
     def update_detail(self, object_list, bundle):
-        return bundle.obj.user_can_edit(bundle.request.user)
+        return bundle.obj.user_can_edit(bundle.request.user, data=bundle.data)
 
     def delete_list(self, object_list, bundle):
         return []
@@ -228,7 +228,7 @@ class CommonModelResource(six.with_metaclass(CommonModelDeclarativeMetaclass, Ba
             return bundle
 
         if hasattr(bundle.obj, 'user_can_edit'):
-            bundle.data['can_edit'] = bundle.obj.user_can_edit(bundle.request.user)
+            bundle.data['can_edit'] = bundle.obj.user_can_edit(bundle.request.user, data=bundle.data)
         else:
             if hasattr(self, 'CREATED_BY_FIELD'):
                 bundle.data['can_edit'] = (getattr(bundle.obj, self.CREATED_BY_FIELD) == bundle.request.user)

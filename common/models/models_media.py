@@ -39,8 +39,9 @@ class Image(AbstractPriorityModel):
 
         super(Image, self).save(*args, **kwargs)
 
-    def user_can_edit(self, user):
-        return not self.attach_to or self.attach_to.cast().user_can_edit(user)
+    def user_can_edit(self, user, data={}):
+
+        return not self.attach_to or self.attach_to.cast().user_can_edit(user, data=data)
 
 
 class YoutubeLinkMixin(models.Model):
