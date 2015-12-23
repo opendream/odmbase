@@ -294,6 +294,6 @@ class User(AbstractPeopleField, CommonModel, AbstractBaseUser, PermissionsMixin)
             else:
                 html_email = None
 
-            _send_mail(subject, email, from_email, [user.email], html_message=html_email)
+            _send_mail(subject, email, from_email, [user.email], html_message=html_email, immediately=True)
 
 

@@ -66,7 +66,11 @@ class UserResource(ImageAttachResource, CommonModelResource):
 
     get_image = fields.FileField(attribute='get_image', readonly=True)
 
-    is_new = fields.CharField(attribute='is_new', null=True, readonly=True)
+    is_new = fields.BooleanField(attribute='is_new', null=True, readonly=True)
+
+    is_staff = fields.BooleanField(attribute='is_staff', null=True, readonly=True)
+    is_superuser = fields.BooleanField(attribute='is_superuser', null=True, readonly=True)
+
 
     class Meta:
         queryset = get_query_user_search()
@@ -150,7 +154,8 @@ class UserResource(ImageAttachResource, CommonModelResource):
         # Protect for secure data
         if not bundle.obj.user_can_edit(bundle.request.user):
             bundle.data.pop('email', None)
-            bundle.data.pop('password', None)
+
+        bundle.data.pop('password', None)
 
         return bundle
 
