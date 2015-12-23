@@ -99,7 +99,8 @@ def uuid(url=None):
 
 def generate_key(number, prefix=''):
     prefix = prefix and ('%s-' % prefix)
-    return '%s%s-%s' % (prefix, urlsafe_base64_encode(force_bytes(number)), uuid(number))
+    return "%010d" % (int(number),)
+    #return '%s%s-%s' % (prefix, urlsafe_base64_encode(force_bytes(number)), uuid(number))
 
 
 def instance_save_image_from_url(instance, image_url, field_name='image', rand=False):

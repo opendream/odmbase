@@ -1,0 +1,12 @@
+{% load i18n %}สวัสดีค่ะคุณ {{ notify_to.unicode_string }}
+
+จากคำสั่งซื้อหมายเลข {{ target.order.get_transaction_id }}
+
+คุณ {{ actor.unicode_string }} ได้ทำการส่ง {{ target.get_item.unicode_string }} ให้คุณแล้ว
+
+หากคุณได้รับของแล้ว กรุณากดที่ปุ่ม "เปลี่ยนสถานะเป็นรับของแล้ว" ที่หน้า {{ protocol }}://{{ domain }}{{ item.get_absolute_url }}/detail
+หลังจากเราได้รับการยืนยันว่าคุณได้รับของแล้ว คุณจะได้ร่วมสนับสนุนให้กับ {{ target.get_item.receiver.unicode_string }} เป็นจำนวน {{ target.receiver_receive_price|floatformat:2 }} บาท
+
+ขอบคุณค่ะ
+
+ปันใจ​:ปันของที่ไม่ได้ใช้ ให้กับคนที่มีใจอยากได้

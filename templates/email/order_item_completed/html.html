@@ -1,0 +1,37 @@
+{% load i18n %}
+<!doctype html>
+<html>
+<head>
+    <meta content="text/html; charset=utf-8" http-equiv="Content-Type">
+    <meta content="width=device-width" name="viewport">
+    <title>มีรายการ่ยืนยันได้รับของ</title>
+    <style>
+    .item-list td {
+        padding: 4px;
+        border-bottom: 1px dashed #ccc;
+    }
+    </style>
+</head>
+
+<body>
+    <p style="font-size: 16px; text-align:left; font-weight: bold; color: #5f3c30;">{% load i18n %}สวัสดีค่ะคุณ {{ notify_to.unicode_string }}</p>
+
+    <p>
+        คุณ {{ actor.unicode_string }} ได้รับ <a target="_blank" href="{{ protocol }}://{{ domain }}{{ target.get_absolute_url }}/detail">{{ target.get_item.unicode_string }}</a> ของคุณเรียบร้อยแล้ว
+    </p>
+    <p>
+        นอกจากนี้ คุณยังได้ร่วมสนับสนุนให้กับ <a target="_blank" href="{{ protocol }}://{{ domain }}{{ target.get_item.receiver.get_absolute_url }}">{{ target.get_item.receiver.unicode_string }}</a> เป็นจำนวน {{ target.receiver_receive_price|floatformat:2 }} บาท
+    </p>
+    <p>
+    ขอบคุณค่ะ
+    </p>
+
+    <table cellpadding="0" style="width: 100%; border-spacing: 0;">
+        <tr>
+            <td style="width: 700px; background-color: #f2f2f2; padding: 15px;">
+                <img src="{{ protocol }}://{{ domain }}/static/images/punjai-footer.png" style="width: 180px; float: right;" alt="ปันของที่ไม่ได้ใช้ ให้กับคนที่มีใจอยากได้" title="ปันของที่ไม่ได้ใช้ ให้กับคนที่มีใจอยากได้"/>
+            </td>
+        </tr>
+    </table>
+</body>
+</html>
