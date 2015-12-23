@@ -209,7 +209,7 @@ def _scrap_image(doc, url):
 
 
 def _send_mail(subject, email, from_email, send_email,
-    html_message, fail_silently=True):
+    html_message, fail_silently=True, immediately=False):
 
     site_url = settings.SITE_URL
     c = {
@@ -219,11 +219,20 @@ def _send_mail(subject, email, from_email, send_email,
 
     email = loader.render_to_string('email/template.html', c)
 
-    try:
-        from utilities.tasks import _send_mail as send_mail
-        send_mail.delay(subject, email, from_email, send_email, 
-            html_message=email, fail_silently=fail_silently)
-    except:
+    if immediately:
         from django.core.mail import send_mail
-        send_mail(subject, email, from_email, send_email, 
-            html_message=email, fail_silently=fail_silently)
+        try:
+            send_mail(subject, email, from_email, send_email,
+                  html_message=email, fail_silently=fail_silently)
+        except:
+            pass
+
+    else:
+        try:
+            from utilities.tasks import _send_mail as send_mail
+            send_mail.delay(subject, email, from_email, send_email,
+                html_message=email, fail_silently=fail_silently)
+        except:
+            from django.core.mail import send_mail
+            send_mail(subject, email, from_email, send_email,
+                html_message=email, fail_silently=fail_silently)

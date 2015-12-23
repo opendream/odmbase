@@ -11,14 +11,17 @@
         <link rel="apple-touch-icon" href="{{ SITE_FAVICON_URL }}" />
         <link rel="shortcut icon" href="{{ SITE_FAVICON_URL }}" />
 
+        <link href='/static/bower_components/jquery-ui/themes/smoothness/jquery-ui.min.css' rel='stylesheet' >
         <link href="/static/bower_components/font-awesome/css/font-awesome.min.css" rel="stylesheet">
+        <link href="/static/components/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+
+
+        <!-- build:css /static/dist/styles/vendor.css async -->
         <link href="/static/bower_components/angular-loading-bar/build/loading-bar.css" rel="stylesheet">
         <link href="/static/bower_components/textAngular/src/textAngular.css" rel="stylesheet">
         <link href="/static/bower_components/sweetalert/lib/sweet-alert.css" rel="stylesheet">
         <link href='/static/bower_components/textAngular/src/textAngular.css' rel='stylesheet' >
-        <link href='/static/bower_components/jquery-ui/themes/smoothness/jquery-ui.css' rel='stylesheet' >
 
-        <link href="/static/components/bootstrap/css/bootstrap.min.css" rel="stylesheet">
         <link href='/static/bower_components/angular-bootstrap-datetimepicker/src/css/datetimepicker.css' rel='stylesheet' />
         <link href="/static/bower_components/angular-dropdowns/dist/angular-dropdowns.css" rel="stylesheet">
         <link href="/static/bower_components/angular-carousel/dist/angular-carousel.css" rel="stylesheet"  />
@@ -27,7 +30,7 @@
 
         <link href="/static/app/odmbase/components/ng-tags-input/ng-tags-input.min.css" rel="stylesheet">
         <link href="/static/app/app.css" rel="stylesheet">
-
+        <!-- endbuild -->
 
 
         <script src="https://www.youtube.com/iframe_api" async></script>
@@ -116,6 +119,7 @@
         <script src="/static/bower_components/angular-bindonce/bindonce.js"></script>
         <script src="/static/bower_components/angular-nl2br/angular-nl2br.js"></script>
         <script src="/static/bower_components/ng-timeago/ngtimeago.js"></script>
+        <script src="/static/bower_components/respimage/respimage.js"></script>
         <!-- endbower -->
         <script src="/static/bower_components/messageformat/locale/th.js"></script>
         <script src="/static/bower_components/angular-bindonce/bindonce.min.js" type="text/javascript" ></script>
@@ -222,6 +226,7 @@
             // Todo get status from constanct not hard code
         </script>
 
+        {% include "project_custom_script_inline.html" %}
         <meta charset="utf-8">
         <meta http-equiv="X-UA-Compatible" content="IE=edge">
         <meta name="viewport" content="width=device-width">
