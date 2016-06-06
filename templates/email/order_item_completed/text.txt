@@ -1,0 +1,7 @@
+{% load i18n %}สวัสดีค่ะคุณ {{ notify_to.unicode_string }}
+
+คุณ {{ actor.unicode_string }} ได้รับ {{ target.get_item.unicode_string }} ของคุณเรียบร้อยแล้ว
+นอกจากนี้ คุณยังได้ร่วมสนับสนุนให้กับ {{ target.get_item.receiver.unicode_string }} เป็นจำนวน {{ target.receiver_receive_price|floatformat:2 }} บาท
+
+ขอบคุณค่ะ
+ปันใจ​:ปันของที่ไม่ได้ใช้ ให้กับคนที่มีใจอยากได้

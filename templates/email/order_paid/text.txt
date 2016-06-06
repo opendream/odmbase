@@ -1,0 +1,13 @@
+{% load i18n %}สวัสดีค่ะคุณ {{ notify_to.unicode_string }}
+
+เราได้รับคำสั่งซื้อหมายเลข {{ target.get_transaction_id }} จากผู้ใช้ชื่อ {{ actor.unicode_string }} มีสินค้าทั้งหมด {{ extra.total_items }} ชิ้น เป็นสินค้าของคุณจำนวน {{ extra.total_seller_items }} ชิ้น ดังนี้
+
+{% for item in extra.items %}
+    {{ item.get_item.unicode_string }} จำนวน {{ item.quantity }} ชิ้น ราคา {{ item.total_price|floatformat:2 }} บาท
+{% endfor %}
+
+รวมเป็นยอดทั้งหมด {{ extra.total_price|floatformat:2 }} บาท
+
+ขอบคุณค่ะ
+
+ปันใจ​:ปันของที่ไม่ได้ใช้ ให้กับคนที่มีใจอยากได้

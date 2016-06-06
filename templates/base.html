@@ -193,6 +193,9 @@
 
         <script src="/static/app/odmbase/main/main.js"></script>
 
+        {% include "project_footer_script.html" %}
+        <!-- @include ../../conf/templates/project_footer_script.html -->
+
         <script src="/static/app/odmbase/account/account.js"></script>
         <script src="/static/app/odmbase/account/profile/profile.service.js"></script>
         <script src="/static/app/odmbase/account/login/login.controller.js"></script>
@@ -206,6 +209,22 @@
         <script src="/static/app/account/detail/detail.controller.js"></script>
         <script src="/static/app/account/profile/profile.controller.js"></script>
         <!-- endbuild -->
+
+        <script type="text/javascript">
+            // see constant.py
+            STATUS_PUBLISHED = 1;
+            STATUS_PENDING = -1;
+            STATUS_DRAFT = 0;
+            STATUS_DELETED = -2;
+            STATUS_SOLD      = 6;
+            STATUS_PAYING    = -5;
+            STATUS_CANCELLED = -3;
+            STATUS_PAID      =  2;
+            STATUS_DELIVERED =  3;
+            STATUS_SETTLED   =  4;
+            STATUS_COMPLETED =  5;
+            // Todo get status from constanct not hard code
+        </script>
 
         {% include "project_custom_script_inline.html" %}
         <meta charset="utf-8">

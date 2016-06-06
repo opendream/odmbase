@@ -2,9 +2,7 @@ from django.conf import settings
 
 from odmbase.common.constants import STATUS_PENDING, STATUS_PUBLISHED, STATUS_DRAFT, STATUS_DELETED
 
-
 def helper(request):
-
     context = {
         'BASE_URL': request.build_absolute_uri('/')[0:-1],
         'SITE_LOGO_URL': settings.SITE_LOGO_URL,

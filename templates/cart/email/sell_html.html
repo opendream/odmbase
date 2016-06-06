@@ -31,7 +31,7 @@
         <tbody>
             {% for item in items %}
             <tr>
-                <td>{{ item.get_item.unicode_string }}</td>
+                <td><a target="_blank" href="{{ protocol }}://{{ domain }}/{{ item.get_item.get_absolute_url }}">{{ item.get_item.unicode_string }}</a></td>
                 <td>{{ item.quantity }}</td>
                 <td style="text-align:right">{{ item.total_price|floatformat:2 }}</td>
             </tr>

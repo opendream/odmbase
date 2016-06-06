@@ -49,6 +49,7 @@ INSTALLED_APPS = (
     'django.contrib.staticfiles',
 
     # Lib
+    'django_extensions',
     'tastypie',
     'sorl.thumbnail',
     'social_auth',
