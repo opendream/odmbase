@@ -13,8 +13,8 @@ from social_auth.utils import dsa_urlopen
 
 
 INSTAGRAM_SERVER = 'instagram.com'
-INSTAGRAM_AUTHORIZATION_URL = 'https://instagram.com/oauth/authorize'
-INSTAGRAM_ACCESS_TOKEN_URL = 'https://instagram.com/oauth/access_token'
+INSTAGRAM_AUTHORIZATION_URL = 'https://api.instagram.com/oauth/authorize'
+INSTAGRAM_ACCESS_TOKEN_URL = 'https://api.instagram.com/oauth/access_token'
 INSTAGRAM_CHECK_AUTH = 'https://api.instagram.com/v1/users/self'
 
 

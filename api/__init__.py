@@ -12,7 +12,10 @@ try:
 
     from api.registers import API_RESOURCES
     for resource in API_RESOURCES:
-        GENERIC_RESOURCES[resource._meta.queryset.model] = resource
+        try:
+            GENERIC_RESOURCES[resource._meta.queryset.model] = type(resource)
+        except:
+            pass
 
 except ImportError:
     pass

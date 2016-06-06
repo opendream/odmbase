@@ -56,8 +56,8 @@ def home(request):
 
         if request.path != '/':
             try:
-                #PageNotFound.objects.get(path=request.path)
-                #status_code = 404
+                PageNotFound.objects.get(path=request.path)
+                status_code = 404
                 pass
             except PageNotFound.DoesNotExist:
                 pass

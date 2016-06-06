@@ -93,7 +93,7 @@ class AbstractPeopleField(models.Model):
             return get_thumbnail(self.image, '200x200')
 
         email = self.email or ''
-        return 'http://www.gravatar.com/avatar/%s?d=mm' % hashlib.md5(email).hexdigest()
+        return '//www.gravatar.com/avatar/%s?d=mm' % hashlib.md5(email).hexdigest()
 
     def __unicode__(self):
         return self.get_display_name()
@@ -241,7 +241,7 @@ class User(AbstractPeopleField, CommonModel, AbstractBaseUser, PermissionsMixin)
 
 
     def get_absolute_url(self):
-        return self.username
+        return '/%s' % self.username
 
 
     def user_can_edit(self, user, data={}):
